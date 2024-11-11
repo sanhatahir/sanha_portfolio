@@ -1,55 +1,52 @@
 # Data Scientist
 
+Hi there! Sanha here! Glad you stumbled across my page!
+
 #### Technical Skills: Python, SQL, AWS, Snowflake, MATLAB
 
 ## Education
-- Ph.D., Physics | The University of Texas at Dallas (_May 2022_)								       		
-- M.S., Physics	| The University of Texas at Dallas (_December 2019_)	 			        		
-- B.S., Physics | The University of Texas at Dallas (_May 2017_)
+- MS – Data Science And Public Policy, Georgetown University						Aug 22–May 24
+  *Relevant Courses:* Advanced Data Science Modelling Techniques, Applied Statistical Learning, Data Visualization using R, Data Ethics
+	*Accolades:* Tech & Public Policy Scholar (100% Scholarship and RAship)
+	*Leadership Positions:* Data Science and Public Policy Representative (McCourt Student Association) and Data Science Bootcamp Leader
+
+- BSc – Economics and Mathematics, Lahore University of Management Sciences				Aug 16–May 20
+*Relevant Courses:* Statistics and Data Analysis, Probability, Numerical Analysis, Operations Research 
+
 
 ## Work Experience
-**Data Scientist @ Toyota Financial Services (_June 2022 - Present_)**
-- Uncovered and corrected missing step in production data pipeline which impacted over 70% of active accounts
-- Redeveloped loan originations model which resulted in 50% improvement in model performance and saving 1 million dollars in potential losses
+- Data Scientist, Data360, World Bank Group, Washington D.C. 			            		          May 24 – Present
+  •	Create and maintain data pipelines and datasets using Python and the KEDRO framework, ensuring efficient, reproducible, and scalable data processing for a global audience.
+  •	Contributed to improvement of datasets by handling missing data and performing outlier detection and aggregation.
+  •	Collaborated with team members to improve internal processes and approaches, primarily using Git.
 
-**Data Science Consultant @ Shawhin Talebi Ventures LLC (_December 2020 - Present_)**
-- Conducted data collection, processing, and analysis for novel study evaluating the impact of over 300 biometrics variables on human performance in hyper-realistic, live-fire training scenarios
-- Applied unsupervised deep learning approaches to longitudinal ICU data to discover novel sepsis sub-phenotypes
+- Teaching Assistant, Strategic Marketing Analytics, Georgetown University, Washington D.C. 	           May 23 – July 23
+  •	Facilitated student comprehension of key marketing analytics concepts, including recommendation analysis, A/B testing, customer segmentation, and marketing mix, through personalized office hours and responsive email support.
+  •	Ran exploratory statistical tests, regressions, and segmentation/clustering analysis on data using R
+  •	Presented breakdown of grades to instructor, providing detailed insights on student performance to inform strategies.
+
+- MDI Scholar, Massive Data Institute, Georgetown University, Washington D.C. 			             Jan 23 –Sep 23
+  •	Maintained large environmental dataset, using creative visualizations to bring data to life.
+  •	Translate data into engaging and accessible insights for EIDC’s core audiences in the media and policymaking communities, particularly for different geographical levels 
+  •	Identify, experiment with, and train in new software and capabilities such as Redivis
+  •	Liaise directly with outside stakeholders to share and advance EIDC’s data collection
+
+- Data Analyst, Afiniti, Lahore and Washington D.C.						            Aug 20 – Jan 22
+  •	Presented non-technical clients with regular updates through business analytics, including dashboards, visualizations, ad hoc analyses, and time series analyses using SQL and Microsoft Excel.
+  •	Led and managed tasks based on data join procedures, data pipelines, ad-hoc analyses, drafting of new business cases, feature engineering and reconciliation with client
+  •	Contributed to extending a key client contract by optimizing machine learning models, including the calculation and analysis of Customer Lifetime Value and churn scores, to offer differentiated customer insights.
+  •	Supported team members by processing internal ETL requests and performing analysis using SQL queries to address their specific business questions and support decision-making.. 
+  •	Led cross-functional projects, optimizing data engineering pipelines for machine learning processes, resulting in a 90% reduction in manual interventions through Python scripting and MySQL procedures.
 
 ## Projects
-### Data-Driven EEG Band Discovery with Decision Trees
-[Publication](https://www.mdpi.com/1424-8220/22/8/3048)
+### Guess the Firm Based on Their Lobbying Patterns: 
+[Website]([https://www.mdpi.com/1424-8220/22/8/3048](https://sanhatahir.shinyapps.io/Guess_The_Firm/))
 
-Developed objective strategy for discovering optimal EEG bands based on signal power spectra using **Python**. This data-driven approach led to better characterization of the underlying power spectrum by identifying bands that outperformed the more commonly used band boundaries by a factor of two. The proposed method provides a fully automated and flexible approach to capturing key signal components and possibly discovering new indices of brain activity.
+•	Crafted an engaging game for fellow students with several interesting data visualizations as hints (R/Shiny).
 
-![EEG Band Discovery](/assets/img/eeg_band_discovery.jpeg)
+### Understanding Climate Denialism in Reddit on AWS: 
+[Website]([https://www.mdpi.com/1424-8220/22/11/4240](https://gu-ppol.github.io/spring-2024-reddit-bigdata-project-team-03/w1_exec.html))
+•	Analyzed climate-related misinformation on Reddit across subreddits on AWS based on select policy-related questions
+•	Conducted network analysis to identify key contributors and super-spreaders of climate denial claims.
+•	Created visualizations to showcase key metrics and effectively communicate technical results to non-technical stakeholders
 
-### Decoding Physical and Cognitive Impacts of Particulate Matter Concentrations at Ultra-Fine Scales
-[Publication](https://www.mdpi.com/1424-8220/22/11/4240)
-
-Used **Matlab** to train over 100 machine learning models which estimated particulate matter concentrations based on a suite of over 300 biometric variables. We found biometric variables can be used to accurately estimate particulate matter concentrations at ultra-fine spatial scales with high fidelity (r2 = 0.91) and that smaller particles are better estimated than larger ones. Inferring environmental conditions solely from biometric measurements allows us to disentangle key interactions between the environment and the body.
-
-![Bike Study](/assets/img/bike_study.jpeg)
-
-## Talks & Lectures
-- Causality: The new science of an old question - GSP Seminar, Fall 2021
-- Guest Lecture: Dimensionality Reduction - Big Data and Machine Learning for Scientific Discovery (PHYS 5336), Spring 2021
-- Guest Lecture: Fourier and Wavelet Transforms - Scientific Computing (PHYS 5315), Fall 2020
-- A Brief Introduction to Optimization - GSP Seminar, Fall 2019
-- Weeks of Welcome Poster Competition - UTD, Fall 2019
-- A Brief Introduction to Networks - GSP Seminar, Spring 2019
-
-- [Data Science YouTube](https://www.youtube.com/channel/UCa9gErQ9AE5jT2DZLjXBIdA)
-
-## Publications
-1. Talebi S., Lary D.J., Wijeratne L. OH., and Lary, T. Modeling Autonomic Pupillary Responses from External Stimuli Using Machine Learning (2019). DOI: 10.26717/BJSTR.2019.20.003446
-2. Wijeratne, L.O.; Kiv, D.R.; Aker, A.R.; Talebi, S.; Lary, D.J. Using Machine Learning for the Calibration of Airborne Particulate Sensors. Sensors 2020, 20, 99.
-3. Lary, D.J.; Schaefer, D.; Waczak, J.; Aker, A.; Barbosa, A.; Wijeratne, L.O.H.; Talebi, S.; Fernando, B.; Sadler, J.; Lary, T.; Lary, M.D. Autonomous Learning of New Environments with a Robotic Team Employing Hyper-Spectral Remote Sensing, Comprehensive In-Situ Sensing and Machine Learning. Sensors 2021, 21, 2240. https://doi.org/10.3390/s21062240
-4. Zhang, Y.; Wijeratne, L.O.H.; Talebi, S.; Lary, D.J. Machine Learning for Light Sensor Calibration. Sensors 2021, 21, 6259. https://doi.org/10.3390/s21186259
-5. Talebi, S.; Waczak, J.; Fernando, B.; Sridhar, A.; Lary, D.J. Data-Driven EEG Band Discovery with Decision Trees. Preprints 2022, 2022030145 (doi: 10.20944/preprints202203.0145.v1).
-6. Fernando, B.A.; Sridhar, A.; Talebi, S.; Waczak, J.; Lary, D.J. Unsupervised Blink Detection Using Eye Aspect Ratio Values. Preprints 2022, 2022030200 (doi: 10.20944/preprints202203.0200.v1).
-7. Talebi, S. et al. Decoding Physical and Cognitive Impacts of PM Concentrations at Ultra-fine Scales, 29 March 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1499191/v1]
-8. Lary, D.J. et al. (2022). Machine Learning, Big Data, and Spatial Tools: A Combination to Reveal Complex Facts That Impact Environmental Health. In: Faruque, F.S. (eds) Geospatial Technology for Human Well-Being and Health. Springer, Cham. https://doi.org/10.1007/978-3-030-71377-5_12
-9. Wijerante, L.O.H. et al. (2022). Advancement in Airborne Particulate Estimation Using Machine Learning. In: Faruque, F.S. (eds) Geospatial Technology for Human Well-Being and Health. Springer, Cham. https://doi.org/10.1007/978-3-030-71377-5_13
-
-- [Data Science Blog](https://medium.com/@shawhin)
