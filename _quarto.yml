@@ -1,0 +1,58 @@
+project:
+  type: website
+  output-dir: ../docs
+
+website:
+  search: false
+  page-navigation: true
+  sidebar:
+    title: Climate Denialism online
+    subtitle: Analysis of reddit data
+    logo: 'logo.png'
+    style: "docked"
+    collapse-level: 2
+    background: light
+    foreground: primary
+    contents:
+      - w1_exec.qmd
+      - section: The research
+        contents: 
+          - w2_introduction.qmd
+          - w3_research.qmd
+          - w4_data.qmd
+      - section: Exploratory data analysis
+        contents:
+          - w5_eda_sum.qmd
+          - w6_eda_detail.qmd
+      - section: Natural Language Processing
+        contents:
+        - w7_nlp_sum.qmd
+        - w8_nlp_detail.qmd
+      - section: Machine Learning
+        contents:
+          - w9_ml_sum.qmd
+          - w10_ml_detail.qmd
+          - w11_ml_detail_2.qmd
+      - section: Final thoughts
+        contents:
+          - w12_limits.qmd
+          - w11_summary.qmd
+      - w13_team.qmd
+  page-footer:
+    left: |
+      Content {{< fa brands creative-commons >}} {{< var course.copyright_year >}} by [{{< var author.name >}}] <br>
+      All content licensed under a {{< fa brands creative-commons >}}
+      {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-nc >}}
+      [Creative Commons Attribution-NonCommercial 4.0 International license (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/)
+    right: |
+      Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)<br>
+      [View the source at {{< fa brands github >}} GitHub]({{< var course.github >}})<br>
+      Image by Sergio Cerrato - Italia from [Pixabay](https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=7903523)
+
+
+format:
+  html:
+    theme: flatly
+    css: style.css
+    toc: true
+

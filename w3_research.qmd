@@ -1,0 +1,101 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Research goals
+
+### <ins>EDA-related goals</ins>
+
+### Goal I.
+
+**Determine the basic characteristics of the climate-related reddit spaces, and understand the prevalence of controversial and climate-related controversial posts across the different spaces.**
+
+*Technical Proposal:*
+
+Use basic filtering and grouping techniques to understand and compare the basic attributes of the three reddit spaces, such as number of submissions, comments, and prevalence of controversy. Perform preliminary cleaning of the dataset by removing empty posts. Then, use NLP to filter down the dataset to environmental terms, and identify any trends and disparities between subreddits based on the presence of environmental terms and controversies related to them by using group by and counts. Use statistical methodology such as chi-square test to understand the relationship between controversiality and environment.
+
+### Goal II.
+
+**Determine and compare the evolution of the presence of environmental concepts across various subreddits.**
+
+*Technical Proposal:*
+
+Split and aggregate the data by year. Then, analyze counts over time to determine any trends, and compare the trend in non-controversial environmental posts and controversial environmental posts across different subreddits. Then, conduct a keyword-based search for previously identified sources of climate misinformation (from Coen et al., 2021) across the different subreddits.
+
+### Goal III.
+
+**Understand more about the posting patterns of sources of environmental controversiality, and if there are any users spreading climate-related controversy.**
+
+*Technical Proposal:*
+
+Conduct counts of distinct comment authors in subreddits for the filtered environmental set to understand the overall distribution of users across time. Identify authors who distribute climate misinformation (same set of sources from Coen et al. (2021)). Investigate the effect of these sources and the concentration of authors.
+
+### Goal IV.
+
+**Understand the presence and prevalence of specific environment-related words and phrases across subreddits in both general and controversial comments.**
+
+*Technical Proposal:*
+
+Summarize on a phrase / word level the presence of environmental topics, and create an overview across subreddits, split by controversiality. To ensure comparability, normalize data before processing. Compare the spaces and whether controversiality is related to any specific environmental topic.
+
+### <ins>NLP-related goals</ins>
+
+
+### Goal V.
+
+**Understand the overall sentiment of posts, and how the tone of posts relate to controversiality and environmental themes.**
+
+*Technical Proposal:*
+
+Conduct sentiment analysis on all posts. Compare posts tagged as controversial or environmental with posts that do not to understand the difference in sentiment. Then, compare posts across themes and across subreddits.
+
+### Goal VI.
+
+**Investigate trends over time to see if any particular claim is gaining in popularity. Relate temporal changes in prevalent claims or subclaims to identified changes in controversy.**
+
+*Technical Proposal:*
+
+Building upon the sentiment analysis, count and compare sentiments across subreddits. Aggregate per year, and analyze changes in trends, including looking at controversy and environmental themes. Identify the differences between subreddits. Investigate whether the presence of controversy or environmental terms makes sentiment change over time.
+
+### Goal VII.
+
+**Understand the role of external information in climate misinformation: how prevalent it is to include external sources, and how these sources influence controversy or sentiment**
+
+*Technical Proposal:*
+
+Building on the EDA analysis, conduct analysis to understand whether the presence of one or more external sources influence sentiment. Compare sentiment across time and subreddits containing climate misinformation within the environmental space.
+
+### <ins>ML-related goals</ins>
+
+### Goal VIII.
+
+**Identify the presence and prevalence of specific climate denial claims, such as ‘climate change isn’t real’ or ‘climate policies don’t work’. Understand the differences between the three subreddits when looking at the presence and prevalence of claims and subclaims, such as the ‘climate change isn’t real’ claim and the ‘ice isn’t melting’ subclaim.**
+
+*Technical Proposal:*
+
+Leverage dataset and pre-trained model provided by Coen et al. (2021) and simpletransformers to classify each post as a specific claim and subclaim. Investigate overall prevalence of claims by counting each. Count and compare occurrences across subreddits. Analyze the prevalence of controversy when comparing posts where claims were found with posts with no claims. *Note: due to technical difficulties, this analysis was performed on a subset of comments.*
+
+### Goal IX.
+
+**Understand what attributes of posts influence climate misinformation: see if the presence of climate denial claims can be predicted based on a number of characteristics of posts.**
+
+*Technical Proposal:*
+
+Looking at posts potentially containing misinformation claims, conduct analysis to understand whether one or more features such as ‘score’ or ‘body_lenght’ or 'controversy' can aid us in predicting the presence of climate denial claims. The presence of all claims are investigated as a binary target. Multiple methodologies, such as Logistic Regression and XGBoost are compared to see which one has the best predictive power. Multiple combination of features are tried to select the best model - this involves bost feature selection and feature engineering. Vectorization, indexing and one-hot-encoding are to be leveraged in data preparation, and results are calibrated using hyperparameter tuning, and split between test and train data. As most posts don't contain misinformation claims, sampling or weights is probably also necessary to correct the target imbalance.
+
+
+### Goal X.
+
+**Understand how prevalent misinformation spreading is, and who are the super-spreaders by understanding the relationships between submissions, comments, and specific users.**
+
+*Technical Proposal:*
+
+Looking at all threads containing misinformation claims, conduct network analysis to understand the density and spread of misinformation from specific users. In this analysis, users would be the nodes, and a user-to-user network would be built based on their interactions (participating in the same thread). Then, analysis would look at whether edges contain information on climate denial. Finally, we'd identify any users who could be seen as ‘super-spreaders’ using centrality measures.
+

@@ -1,0 +1,158 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Conclusion
+
+The goal of our research was to understand climate-related misinformation on Reddit in the specific subreddits of *r/climatechange*, *r/climatesceptic*, and *r/conspiracy*. We've found early on that comments tagged as controversial, meaning a large number of 'upvotes' and 'downvotes' on the same comment, and environmental comments as tagged by us using a select number of keywords, were more likely to occur together. We've also seen controversial environmental posts rise as climate policy was debated in various parts of the US government, especially in the *r/conspiracy* space.
+
+```{r, fig.width=10, fig.height=6}
+library(tidyverse)
+library(ggplot2)
+df <- read.csv('../data/csv/growth_over_time.csv')
+  
+df$date <- as.Date(paste(df$year, df$month, "01", sep = "-"), "%Y-%m-%d")
+# To calculate the %-es for better visualizations, I will calculate the totals and then the % of cont / non-cont posts per month, and then will visualize that.
+total_posts <- aggregate(count_of_comments ~ date + subreddit + env, data = df, FUN = sum)
+
+controversial_counts <- aggregate(count_of_comments ~ date + subreddit + env + controversiality, data = df, FUN = sum)
+
+df_percentage <- merge(controversial_counts, total_posts, by = c('date', 'subreddit', 'env'), suffixes = c('_controversial', '_total'))
+df_percentage$percentage <- with(df_percentage, count_of_comments_controversial / count_of_comments_total * 100)
+
+df_filt_2 <- df_percentage[df_percentage$controversiality == 1, ]
+
+ggplot(df_filt_2, aes(x = date, y = percentage, color = subreddit, linetype = factor(env), group = interaction(subreddit, env))) +
+  geom_line() +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  scale_linetype_manual(values = c("solid", "dotted"), labels = c("No", "Yes")) +
+  geom_vline(xintercept = as.Date(c("2021-11-01", "2022-02-01", "2022-06-01", "2022-08-01")), linetype="dashed", color="deepskyblue4") +
+  annotate("text", x = as.Date('2021-10-15'), y = 9, label = "Build back debate", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-01-15'), y = 9, label = "SC debates EPA", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-05-15'), y = 10.5, label = "SC decision on EPA", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-07-15'), y = 11, label = "IRA passed", angle = 90, color='deepskyblue4') +
+  labs(y = 'Percentage of controversial comments', 
+       x = "Date", 
+       color = 'Subreddit',
+       linetype = 'Environmental topic or not',
+       caption = 'Source: Reddit', 
+       title = 'Climate controversy has been rising since US policy debates',
+       subtitle = 'Evolution of controversy by subreddit and topic, %') +
+  theme_minimal() +
+  theme(
+        legend.position="right",
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(color = "grey20", size = 10),
+        axis.text.y = element_text(color = "grey20", size = 10),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=16, hjust = 0.5),
+        plot.subtitle = element_text(size=14, hjust = 0.5)
+      )
+
+```
+
+
+We've also found that a few authors were very likely to be the author of posts containing well-known climate denial sources. In addition, we've found that posts containing this misinformation were more likely to be positive or neutral in sentiment than general posts. While we've seen differences among subreddits, the general picture was the same.
+
+<div style="text-align: center;">
+**Author-level presence of known misinformation links**<br>
+![Table 7](../data/plots/Table7.PNG)
+<div style="text-align: left;">
+
+
+To investigate this further, we've used a pre-trained LLM model, RoBERTa, to see what are the prevalent climate denial claims in these spaces. Overall, we've found that the two most prevalent denials were 'Climate change isn't happening' and 'Human emissions are not the source of climate change'. This finding was quite alarming as generally what is being seen in other spaces is the rise of claims centered around 'Climate solutions don't work' and 'Climate science isn't reliable', with much lesser focus on climate change not happening (e.g., Coen et al., 2021, CCDH, 2024). A key difference between these studies and ours is that they were investigating conetent mostly backed by known sources of climate misinformation, such as conservative think tanks. Here, the source of misinformation (while often quoting some of these identified sources) were individuals, and the belief that climate change isn't happening or isn't caused by humans seem to be much more prevalent than we've anticipated.
+
+Zooming in on the differences, the most prevalent claims in both *r/climatechange* and *r/climatesceptic* are centered around either the Earth's natural cycles as the source of global warming, or the denial of the increased frequency of extreme weather events. But in *r/climatechange*, the next most popular claim is how CO2 is beneficial for humans and the environmental, while there seem to be a much stronger focus in the *r/climatesceptic* on how climate policies and technologies doesn't work.
+
+```{r, fig.width=10, fig.height=6}
+library(plotly)
+library(RColorBrewer)
+library(tidyr)
+library(dplyr)
+library(waffle)
+library(ggplot2)
+
+overall_roberta = read.csv("../data/csv/pd_roberta_tags_for_goal_5.csv")
+second_graph_df <- aggregate(count ~ claim_long +subclaim_long + subreddit, data = overall_roberta, FUN = sum)
+
+
+second_graph_climate_change = second_graph_df[second_graph_df$subreddit == "climatechange" & second_graph_df$claim_long != "No claim",]
+second_graph_climate_change_level1 <- aggregate(count ~ claim_long, data = second_graph_climate_change, FUN = sum)
+second_graph_climate_change_level1$parent = ""
+second_graph_climate_change <- subset(second_graph_climate_change, select = -subreddit)
+colnames(second_graph_climate_change)[colnames(second_graph_climate_change) == "claim_long"] <- "parent"
+colnames(second_graph_climate_change)[colnames(second_graph_climate_change) == "subclaim_long"] <- "claim_long"
+union_df_climate_change <- rbind(second_graph_climate_change, second_graph_climate_change_level1)
+
+
+
+second_graph_climateskeptics = second_graph_df[second_graph_df$subreddit == "climateskeptics" & second_graph_df$claim_long != "No claim",]
+second_graph_climateskeptics_level1 <- aggregate(count ~ claim_long, data = second_graph_climateskeptics, FUN = sum)
+second_graph_climateskeptics_level1$parent = ""
+second_graph_climateskeptics <- subset(second_graph_climateskeptics, select = -subreddit)
+colnames(second_graph_climateskeptics)[colnames(second_graph_climateskeptics) == "claim_long"] <- "parent"
+colnames(second_graph_climateskeptics)[colnames(second_graph_climateskeptics) == "subclaim_long"] <- "claim_long"
+union_df_climateskeptics <- rbind(second_graph_climateskeptics, second_graph_climateskeptics_level1)
+
+
+
+fig <- plot_ly() 
+
+fig <- fig %>%
+  add_trace(
+    ids = union_df_climate_change$claim_long,
+    labels = union_df_climate_change$claim_long,
+    parents = union_df_climate_change$parent,
+    values = union_df_climate_change$count,
+    type = 'sunburst',
+    branchvalues = 'total',
+    maxdepth = 3,
+    domain = list(column = 0)
+  ) 
+
+
+fig <- fig %>%
+  add_trace(
+    ids = union_df_climateskeptics$claim_long,
+    labels = union_df_climateskeptics$claim_long,
+    parents = union_df_climateskeptics$parent,
+    values = union_df_climateskeptics$count,
+    type = 'sunburst',
+    branchvalues = 'total',
+    maxdepth = 3,
+    domain = list(column = 1)
+  ) 
+
+
+fig <- fig %>%
+  layout(
+    title = "Figure 4: Claims and Sub-claims for \nr/climatechange (left) & r/climateskeptics (right)",
+    grid = list(columns =2, rows = 1),
+    margin = list(l = 0, r = 0, b = 0, t = -1),
+    # Playing around with colots 
+    sunburstcolorway = c(
+      "#636efa","#EF553B","#00cc96","#ab63fa","#19d3f3",
+      "#e763fa", "#FECB52","#FFA15A","#FF6692","#B6E880"
+    )
+    
+  ) 
+
+fig
+
+```
+
+Finally, we wanted to understand the network characteristics and how misinformation spreads and if there are 'superspreaders'. When looking at the broader community, we've found that typically, authors who spread known climate misinformation sources are only likely to discuss one source. These users seem to be not making a concerted effort to spread misinformation systematically. We've also identified two sources that stood out in popularity when looking at the number of people who interacted with them: *wattsupwiththat.com* and *notrickszone.com*. When looking at specific climate misinformation claims, we've identified a couple of authors who typically engage in the spreading of misinformation and manage to generate significant traffic on their posts. Most notably, *logicalprogressive* and *LackmustestTester* are associated with the bulk of the climate denial claims we've investigated.
+
+Our research was limited in a few crucial ways. First of all, investigating more reddit spaces could have added further nuance to the analysis. Furthermore, we've faced some technical difficulties and had to result to sampling comments for the climate denialism analysis, which might provide an accurate snapshot of the state of denial claims in general (we've taken a random sample of all Reddit spaces), but the low number of sampled comments limited our understanding and prevented a detailed temporal analysis.
+</div>

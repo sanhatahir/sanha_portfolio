@@ -1,0 +1,20 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# ML Summary
+
+Beyond the analysis we've conducted as part of our EDA exploration, we wanted to gain a deeper understanding of the type and prevalence of climate denialism in the three investigated subreddits. To do so, we leveraged a climate misinformation NLP model, developed by Coen et al. (2021). While technical difficulties prevented us from applying this to all observations, we conducted our analysis with a select sample across the three subreddits. 
+
+We've used a pre-trained LLM model, RoBERTa, to see what are the prevalent climate denial claims in these spaces. Overall, we've found that the two most prevalent denials were 'Climate change isn't happening' and 'Human emissions are not the source of climate change'. This finding was quite alarming as generally what is being seen in other spaces is the rise of claims centered around 'Climate solutions don't work' and 'Climate science isn't reliable', with much lesser focus on climate change not happening (e.g., Coen et al., 2021, CCDH, 2024). A key difference between these studies and ours is that they were investigating conetent mostly backed by known sources of climate misinformation, such as conservative think tanks. Here, the source of misinformation (while often quoting some of these identified sources) were individuals, and the belief that climate change isn't happening or isn't caused by humans seem to be much more prevalent than we've anticipated.
+
+Zooming in on the differences, the most prevalent claims in both *r/climatechange* and *r/climatesceptic* are centered around either the Earth's natural cycles as the source of global warming, or the denial of the increased frequency of extreme weather events. But in *r/climatechange*, the next most popular claim is how CO2 is beneficial for humans and the environmental, while there seem to be a much stronger focus in the *r/climatesceptic* on how climate policies and technologies doesn't work.
+
+We also investigated the network of comments and submissions to isolate the "super-spreaders" of these claims and to identify the type of the claims they make most frequently. We've found that most users only discuss one claim, if any, but a couple of users were more heavily involved, for example *logicalprogressive* and *LackmustestTester*. They also interacted heavily with their own submissions, and tended to be active participants in conversations they started. Another active user we've found was 'AutoModerator'. This user interacted with most skeptic sites we've identified earlier, and is likely a bot spreading misinformation.

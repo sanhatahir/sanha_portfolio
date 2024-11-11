@@ -1,0 +1,117 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# NLP Summary
+
+In this part of our analysis, we further investigated the controversial and environmental posts in subreddits *r/conspiracy*, *r/climatechange* and *r/climateskeptic*. We performed some additional data cleaning and looked at the sentiment of the posts. The summary of our findings can be seen in the interactive chart Figure 1 that shows the overall distribution of sentiment across the three subreddits. In general, we've found that *r/conspiracy* tended to be more negative than the other two spaces.
+
+```{r}
+library(plotly)
+
+subreddits <- c("climatechange", "climateskeptics", "conspiracy" )
+
+for (i in seq_along(subreddits)) {
+  subreddit_val <- subreddits[i]
+  # df <- read.csv("C:/Users/Sanha Tahir/Documents/GitHub/spring-2024-reddit-bigdata-project-team-03/data/csv/total_sentiment_grouping.csv")
+  df_st <- read.csv('../data/csv/total_sentiment_grouping.csv')
+  filtered_df <- subset(df_st, env == "true" & subreddit == subreddit_val)
+  filtered_df$controversiality <- ifelse(filtered_df$controversiality == "1", "Controversial", "Not Controversial")
+  filtered_df$env <- ifelse(filtered_df$env == "true", subreddit_val, "Non-environmental")
+
+  ################ First level
+  first_grouped_data <- filtered_df %>%
+    group_by(env, controversiality) %>%
+    summarise(sum_sentiment_count = sum(sentiment_count))
+  ################## Second level:
+  second_grouped_data <- filtered_df %>%
+    group_by(env, controversiality, sentiment_result) %>%
+    summarise(sum_sentiment_count = sum(sentiment_count))
+  second_grouped_data$concatenated = paste(second_grouped_data$controversiality, second_grouped_data$sentiment_result, sep = " - ")
+  ###### Concatenating data:
+  id_sfx <- c(first_grouped_data$controversiality, second_grouped_data$concatenated)
+  labels_sfx <- c(first_grouped_data$controversiality, second_grouped_data$sentiment_result)
+  parents_sfx <- c(first_grouped_data$env, second_grouped_data$controversiality)
+  values_sfx <- c(rep(0, length(first_grouped_data$env)), second_grouped_data$sum_sentiment_count)
+  
+  d <- data.frame(
+    ids = id_sfx,
+    labels = labels_sfx,
+    parents = parents_sfx,
+    values = values_sfx,
+    stringsAsFactors = FALSE
+  )
+  
+  assign(paste("df_", subreddit_val, sep = ""), d)
+  
+}
+
+# Plotting: 
+# FYI: Doing it in a for loop was overwriting things
+
+fig <- plot_ly() 
+
+fig <- fig %>%
+  add_trace(
+    ids = df_climatechange$ids,
+    labels = df_climatechange$labels,
+    parents = df_climatechange$parents,
+    values = df_climatechange$values,
+    type = 'sunburst',
+    maxdepth = 3,
+    domain = list(column = 0)
+  ) 
+
+
+fig <- fig %>%
+  add_trace(
+    ids = df_climateskeptics$ids,
+    labels = df_climateskeptics$labels,
+    parents = df_climateskeptics$parents,
+    values = df_climateskeptics$values,
+    type = 'sunburst',
+    maxdepth = 3,
+    domain = list(column = 1)
+  ) 
+
+fig <- fig %>%
+  add_trace(
+    ids = df_conspiracy$ids,
+    labels = df_conspiracy$labels,
+    parents = df_conspiracy$parents,
+    values = df_conspiracy$values,
+    type = 'sunburst',
+    maxdepth = 3,
+    domain = list(column = 2)
+  )  
+
+
+fig <- fig %>%
+  layout(
+    title = "Sentimental & Controversial Breakdown of\nEnvironmental Posts Across Subreddits",
+    grid = list(columns =3, rows = 1),
+    # Playing around with colots 
+    sunburstcolorway = c(
+        "#636efa","#EF553B","#00cc96","#ab63fa","#19d3f3",
+        "#e763fa", "#FECB52","#FFA15A","#FF6692","#B6E880"
+      )
+    
+    ) 
+
+fig
+```
+
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 1*</p><br><br>
+<div style="text-align: left;"></div>
+
+Focusing on the environmental space, we looked also at trends across time and found that generally, the sentiment in the different subreddits were stable, with the notable exception of controversial comments, were we've seen a lot of volatility on a monthly basis. In addition to this, we've also seen more changes in the r/conspiracy subreddit with regards to environmental topics: around the same time when the percentage of controversial environmental posts decreased, the sentiment of these comments also decreased (early 2022). Since then, as the percentage of these comments have started to grow, the sentiment of these comments also started to be somewhat more positive. This indicates that the additional environmental comments, many of which contains controversial information and often misinformation, tend to have a more positive sentiment.
+
+Finally, we also wanted to understand how sentiment and misinformation sources relate to each other, and found that controversial comments containing explicit climate misinformation tend to be more positive, and it is also more likely to be neutral. To summarize, we've found that misinformation and controversial information generally tend to have a more positive sentiment, which probably helps it spread more easily. 

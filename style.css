@@ -1,0 +1,15 @@
+.output {
+    color: green;
+    background-color: black;
+  }
+/* Custom styles for mobile navbar */
+.navbar {
+    background-color: #f8f9fa
+}
+
+
+.navbar-dark .navbar-toggler,
+.navbar-dark .navbar-brand,
+.navbar-dark .navbar-nav .nav-link {
+    color: #333 !important; 
+}

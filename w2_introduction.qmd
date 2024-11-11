@@ -1,0 +1,35 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Introduction
+
+## Climate denial and misinformation: online spaces matter
+
+Climate change is an imminent danger to society, and a well established scientific fact for decades. Yet, even today, the overall validity of climate change claims, the community, the science, or specific solutions are being met with skepticism and denial. Climate skeptic voices and misinformation have been identified on multiple social media platforms. For example, Coan et al. (2021) investigated types of claims in blog posts and think tank outputs, or the Center for Countering Digital Hate conducted a similar research on YouTube videos. The results from both these research confirmed the existence of multiple climate skeptic claims, mostly driven by well-known conservative outlets and influencers.
+
+The claims and subclaims can be seen below. The research has found a shift in the last couple of years, dating back to before 2010: while in the past, claims such as 'Climate change isn't happening' and 'It isn't caused by humans' were the most prevalent. In recent years, the messaging is becoming more and more focused on how 'Climate policies don't work', 'The science / community is unreliable', or how climate change is beneficial.
+
+<div style="text-align: center;">
+**Prevalent climate denial claims and subclaims**<br>
+![Table 1](../data/plots/nlp_table1.jpg)
+<div style="text-align: left;">
+
+## Climate denial on reddit: how worried should we be?
+
+Thus, our goal is to investigate this phenomenon using Reddit data, and to understand both the prevalence of climate misinformation on specific subreddits, the type of claims, and the network of spreading these claims. We wanted to understand if similar patterns persist on Reddit, and how this form of self-moderated discussion boards potentially differ from other social media platforms. This could help advise both Reddit on the prevalence and spread of climate misinformation, or policymakers on misinformation in general. It could also inform policymakers on how effective some form of moderations are, what are the prevalent climate denial claims on Reddit, and how these are connected to each other. We might well see self-moderation amplifying existing biases, with a greater-than-expected difference between ‘pro climate science’ and ‘climate skeptic’ spaces.
+
+In our research, we focused on three subreddits to gain a picture of climate misinformation: *r/conspiracy*, *r/climateskeptic*, and *r/climatechange*. We investigated the time period between January 2021 and March 2023. In total, we looked at !16m submissions and comments. The below table summarizes the data we've used.
+
+<div style="text-align: center;">
+**Summary statistics**<br>
+![Table 1](../data/plots/Table1.png)
+<div style="text-align: left;">
+</div>

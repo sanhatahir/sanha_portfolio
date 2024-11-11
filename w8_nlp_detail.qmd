@@ -1,0 +1,412 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Detailed NLP results
+
+## High Level Data Summary
+To begin our analysis, we conducted some high level data exploration to gain an understanding of dataset statistics more relevant to working with NLP than in our EDA segment of the work.
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+library(ggplot2)
+library(tidyverse)
+
+df <- read.csv("../data/csv/comment_stats.csv")
+df <- df %>% group_by(subreddit, env) %>% summarise(average_word_count=mean(average_words), .groups = 'drop')
+
+df %>% ggplot(aes(x = average_word_count)) + geom_density(aes(color=env)) + labs(y = "Probability Density", 
+       x = "Average Monthly Word Count", 
+       color = "Environmental",
+       caption = "Source: Reddit", 
+       title = "Environmental posts tend to be longer",
+       subtitle='Density Plot of Word Count of Comments') + 
+  scale_color_brewer(palette = "Dark2") +
+  theme_minimal() +
+        theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1),
+        legend.background = element_rect(color = "black", fill = "white"),
+        legend.box.margin = margin(10, 10, 10, 10),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=14, hjust = 0.5),
+        plot.subtitle = element_text(size=12, hjust = 0.5)
+      )
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 1*</p><br><br>
+<div style="text-align: left;">
+
+We can see some disparity between environmental and non-environmental posts simply by looking at the posts statistics: posts flagged as "environmental" based upon our set of keyword search terms are typically longer than those without the relevant keywords.This pattern holds true across all the subreddits we are considering in this analysis, as can be seen in Figure 2.
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+df <- read.csv("../data/csv/comment_stats.csv")
+df <- df %>% group_by(subreddit, env) %>% summarise(average_word_count=mean(average_words), .groups = 'drop')
+
+df %>% ggplot(aes(x=subreddit, y = average_word_count, fill=env)) + geom_col(position="dodge") + 
+  geom_text(aes(label = round(average_word_count, 1), group = env),            
+            position = position_dodge(width = 0.9),
+            vjust = -0.5,
+            color = "black",               
+            size = 4)     +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(x = "Subreddit", 
+       y = "Average Monthly Word Count", 
+       caption = "Source: Reddit", 
+       title = "Environmental comments longest in r/climatechange",
+       subtitle='Word Count of Comments By Subreddit',
+       fill = 'Environmental') + 
+  theme_minimal() +
+        theme(legend.position = c(1, 0),
+        legend.justification = c(1, 0),
+        legend.background = element_rect(color = "darkgrey", fill = "white"),
+        legend.box.margin = margin(10, 10, 10, 10),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=14, hjust = 0.5),
+        plot.subtitle = element_text(size=12, hjust = 0.5)
+      )
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 2*</p><br><br>
+<div style="text-align: left;">
+
+When examining the change of comment lengths over time by both the subreddit and whether or not the comment is environment related, there is a less discernible pattern. There does not appear to have been a significant change over the time period in question regarding general comments, but there's some volatility across months. Looking at the Environmental space, we're seeing an overall trend of increase in comment length in *r/climateskeptics*, but a decrease in the other two spaces.
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+df <- read.csv("../data/csv/comment_stats.csv") %>% mutate(date=as.Date(paste(year, month, "01", sep = "-"), "%Y-%m-%d"))
+
+df <- df %>%
+  mutate(env = factor(env, levels = c('False', 'True'), labels = c("General", "Environmental")))
+
+ggplot(df, aes(x = date, y = average_words, group = subreddit)) +
+  geom_point(aes(color = subreddit)) +
+  geom_line(aes(color = subreddit), linetype='dotted') +
+  facet_wrap(~env, scales = "free_y") +  # Updated to use the modified factor levels
+  labs(x = "Date",  # Corrected label for x-axis
+       y = "Average Words",  # Corrected label for y-axis
+       color = "Subreddit",
+       caption = "Source: Reddit", 
+       title = "Environmental comments tend to lengthen in r/climateskeptics and shorten otherwise",
+       subtitle='Word Count of Comments by Subreddit and Environmental Status') +
+  scale_color_brewer(palette = "Dark2") +
+  theme_minimal() +
+  theme(legend.justification = c(1, 1),
+        legend.background = element_rect(color = "black", fill = "white"),
+        legend.box.margin = margin(10, 10, 10, 10),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=14, hjust = 0.5),
+        plot.subtitle = element_text(size=12, hjust = 0.5))
+```
+
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 3*</p><br><br>
+<div style="text-align: left;">
+
+We then looked into the words themselves to get a better grasp of the topics being discussed. For this, we used word clouds to visualize the most frequently occurring words, as shown in *Figure 4*.
+
+
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+library(wordcloud)
+library(RColorBrewer)
+
+#par(mar = c(1, 1, 1, 1))
+
+climate_change_df <- read.csv("../data/csv/overall_word_freq.csv")
+wordcloud(words = climate_change_df$word, freq = climate_change_df$count, min.freq = 1,
+          max.words = 200, random.order = FALSE, rot.per = 0.35,
+          colors = brewer.pal(8, "Dark2"))
+title(main = "Analysis of overall Word Frequency")
+
+```
+
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 4*</p><br><br>
+<div style="text-align: left;">
+
+While mostly mundane words like ‘people’ and ‘comment’ dominate, there are some interesting words used heavily in the discussions. Most notably, vaccines were discussed heavily, using different variations of the word.
+
+We then analyzed frequently used words across the three subreddits, as shown in Figure 5.
+
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+library(wordcloud)
+library(RColorBrewer
+        )
+par(mfrow = c(1, 3))
+
+climate_change_df <- read.csv("../data/csv/climate_change_word_freq.csv")
+wordcloud(words = climate_change_df$word, freq = climate_change_df$count, min.freq = 1,
+          max.words = 200, random.order = FALSE, rot.per = 0.35,
+          colors = brewer.pal(8, "Dark2"))
+title(main = "r/climatechange", line = 0.2)
+
+skeptic_df <- read.csv("../data/csv/climate_skeptics_word_freq.csv")
+wordcloud(words = skeptic_df$word, freq = skeptic_df$count, min.freq = 1,
+          max.words = 200, random.order = FALSE, rot.per = 0.35,
+          colors = brewer.pal(8, "Dark2"))
+title(main = "r/climateskeptic", line = 0.2)
+title(main = "Word Frequencies Across Subreddits", line = 1.5)
+
+conspiracy_df <- read.csv("../data/csv/conspiracy_word_freq.csv")
+wordcloud(words = conspiracy_df$word, freq = conspiracy_df$count, min.freq = 1,
+          max.words = 200, random.order = FALSE, rot.per = 0.35,
+          colors = brewer.pal(8, "Dark2"))
+title(main = "r/conspiracy", line =0.2)
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 5*</p><br><br>
+<div style="text-align: left;">
+
+There are some interesting overlaps between the *r/climatechange* and *r/climateskeptic* subreddits. Global warming, greenhouse gases, emissions and temperatures (specifically the word warm) are discussed heavily. Similarly, the words ‘research’ and ‘scientist’ seem to be mentioned frequently in both subreddits as well.
+
+The word cloud for the *r/conspiracy* subreddit is a bit less interesting, though vaccines are discussed heavily. More generic words like ‘means’, ‘think’, ‘should’ ‘government’ and ‘media’ appear frequently. While they do not reveal much on their own, when we understand the context, we can conclude that the users are speculating about conspiracies related to vaccines, government and media more than anything.
+
+
+
+### Goal V.
+
+**Understand the overall sentiment of posts, and how the tone of posts relate to controversiality and environmental themes.**
+
+*Results:*
+
+To deepen our understanding of these comments, we also ran a sentiment analysis to see if general and environmental posts differ. Interestingly, we've found that environmental posts tended to be more positive than general posts, while controversial posts tended to have more negativity in both categories. Across both controversial and uncontroversial posts, comments pertaining to environmental terms tend to have be positive at a higher rate than general comments. *Figure 6* shows this breakdown. One reason for this difference might be either people trying to be hopeful, or people denying climate change and reaffirming false positivities.
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+
+df <- read.csv("../data/csv/total_sentiment_grouping.csv") %>% mutate(date=as.Date(paste(year, month, "01", sep = "-"), "%Y-%m-%d"))
+
+df_p1 <- df %>% 
+  group_by(controversiality, env) %>% 
+  mutate(perc_of_sentiment = round(100*sentiment_count/sum(sentiment_count), 2)) %>% 
+  mutate(env = factor(env, levels = c('false', 'true'), labels = c("General", "Environmental"))) %>% 
+  mutate(controversiality = factor(controversiality, levels = c('0', '1'), labels = c("Uncontroversial", "Controversial")))
+
+df_p1 %>% ggplot(aes(x = env, y=perc_of_sentiment)) + 
+  geom_col(aes(fill=sentiment_result)) + 
+  facet_wrap("controversiality") +
+  scale_fill_brewer(palette = "RdYlBu") +
+  labs(y = 'Percentage of Comments', 
+       x = NULL, 
+       fill = 'Sentiment',
+       caption = 'Source: Reddit', 
+       title = 'Breakdown of Sentiments By Environment and Controversiality',
+       subtitle='') +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=14, hjust = 0.5),
+        plot.subtitle = element_text(size=12, hjust = 0.5))
+```
+
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 6*</p><br><br>
+<div style="text-align: left;">
+We then wanted to investigate how the sentiments differ across the three subreddits, for environmental posts. Figures 7.1-3 show this breakdown, in the respective subreddit. The interactive chart can be used to zoom in on any subsection.
+
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+library(plotly)
+
+subreddits <- c("climatechange", "climateskeptics", "conspiracy" )
+
+for (i in seq_along(subreddits)) {
+  subreddit_val <- subreddits[i]
+  # df <- read.csv("C:/Users/Sanha Tahir/Documents/GitHub/spring-2024-reddit-bigdata-project-team-03/data/csv/total_sentiment_grouping.csv")
+  df_st <- read.csv('../data/csv/total_sentiment_grouping.csv')
+  filtered_df <- subset(df_st, env == "true" & subreddit == subreddit_val)
+  filtered_df$controversiality <- ifelse(filtered_df$controversiality == "1", "Controversial", "Not Controversial")
+  filtered_df$env <- ifelse(filtered_df$env == "true", subreddit_val, "Non-environmental")
+
+  ################ First level
+  first_grouped_data <- filtered_df %>%
+    group_by(env, controversiality) %>%
+    summarise(sum_sentiment_count = sum(sentiment_count))
+  ################## Second level:
+  second_grouped_data <- filtered_df %>%
+    group_by(env, controversiality, sentiment_result) %>%
+    summarise(sum_sentiment_count = sum(sentiment_count))
+  second_grouped_data$concatenated = paste(second_grouped_data$controversiality, second_grouped_data$sentiment_result, sep = " - ")
+  ###### Concatenating data:
+  id_sfx <- c(first_grouped_data$controversiality, second_grouped_data$concatenated)
+  labels_sfx <- c(first_grouped_data$controversiality, second_grouped_data$sentiment_result)
+  parents_sfx <- c(first_grouped_data$env, second_grouped_data$controversiality)
+  values_sfx <- c(rep(0, length(first_grouped_data$env)), second_grouped_data$sum_sentiment_count)
+  
+  d <- data.frame(
+    ids = id_sfx,
+    labels = labels_sfx,
+    parents = parents_sfx,
+    values = values_sfx,
+    stringsAsFactors = FALSE
+  )
+  
+  assign(paste("df_", subreddit_val, sep = ""), d)
+  
+}
+
+# Plotting: 
+# FYI: Doing it in a for loop was overwriting things
+
+fig <- plot_ly() 
+
+fig <- fig %>%
+  add_trace(
+    ids = df_climatechange$ids,
+    labels = df_climatechange$labels,
+    parents = df_climatechange$parents,
+    values = df_climatechange$values,
+    type = 'sunburst',
+    maxdepth = 3,
+    domain = list(column = 0)
+  ) 
+
+
+fig <- fig %>%
+  add_trace(
+    ids = df_climateskeptics$ids,
+    labels = df_climateskeptics$labels,
+    parents = df_climateskeptics$parents,
+    values = df_climateskeptics$values,
+    type = 'sunburst',
+    maxdepth = 3,
+    domain = list(column = 1)
+  ) 
+
+fig <- fig %>%
+  add_trace(
+    ids = df_conspiracy$ids,
+    labels = df_conspiracy$labels,
+    parents = df_conspiracy$parents,
+    values = df_conspiracy$values,
+    type = 'sunburst',
+    maxdepth = 3,
+    domain = list(column = 2)
+  )  
+
+
+fig <- fig %>%
+  layout(
+    title = "Sentimental & Controversial Breakdown of\nEnvironmental Posts Across Subreddits",
+    grid = list(columns =3, rows = 1),
+    # Playing around with colots 
+    sunburstcolorway = c(
+        "#636efa","#EF553B","#00cc96","#ab63fa","#19d3f3",
+        "#e763fa", "#FECB52","#FFA15A","#FF6692","#B6E880"
+      )
+    
+    ) 
+
+fig
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 7*</p><br><br>
+<div style="text-align: left;">
+
+Overall, there are far more non-controversial posts, than controversial. An interesting insight is that within controversial posts, there seems to be a balance between positive and negative posts, with a slight tilt towards positivity. This is surprising because we would have expected negative emotion dominating.
+
+
+However, a counter argument could be that there are posts that argue that the world is perfectly fine (i.e. positive sentiment) that are perceived as controversial. At the same time, there are probably many negative posts that also being flagged as controversial (e.g., derisive to others' opinions). Ironic posts might also be picked up as positive. 
+
+
+### Goal VI.
+
+**Investigate trends over time to see if any particular claim is gaining in popularity. Relate temporal changes in prevalent claims or subclaims to identified changes in controversy.**
+
+*Results:*
+
+Building upon the sentiment analysis, we wanted to understand how the sentiment of comments have been chaning over time across the different subreddits, in both the general and the environmental space, and how controversiality relate to all of these. *Figure 8* shows the average sentiment across the investigated time period for all subreddits. We calculated the average sentiment by weighting negative sentiment as -1, positive as 1, and neutral as 0, multiplying these with the number of comments, and then dividing with the total number of comments for that given time period / area. We've found two key things. One, in most subreddits across all time period, non-controversial comment sentiment was relatively stable, while controversial can differ quite drastically month-by-month. But, when looking at the *r/climatechange* and *r/climatesceptic* spaces, we see that controversial and non-controversial posts have a relatively similar sentiment - granted, controversial sentiment is unstable with no clear pattern, but it generally speaking is in line with 'normal' comments. 
+
+On the other hand, for the *r/conspiracy* space, we can see different trends. For one, in the general space, controversial comments are always more negative. Two, in the environmental space, regardless of controversy, the sentiment of comments have been more volatile than in other spaces. In fact, we can see a negative trend in sentiment around the time when we've also perceived an overall decrease in the percentage of controversial comments in the *r/conspiracy* space. And, at the same time as the percentage of controversial environmental (and general, though not by the same rate) comments started to increase, their sentiment also started to increase - indicating that in recent times, there is not only an increased number of controversial environmental posts, but their sentiment also tends to be somewhat more positive than it was earlier, though there's a lot of volatility in this. For reference, we included key environmental policy events on this timeline as well (Build back better debate, Supreme Court debates and rules on EPA regulatory power, Inflation Reduction Act passes).
+
+```{r, fig.width=10, fig.height=6}
+df_pl3 <- df %>%
+  mutate(sentiment_score = case_when(
+    sentiment_result == "negative" ~ -1,
+    sentiment_result == "neutral" ~ 0,
+    sentiment_result == "positive" ~ 1)) %>%
+  mutate(weighted_sentiment = sentiment_score * sentiment_count) %>%
+  group_by(date, subreddit, env, controversiality) %>%
+  summarise(
+    total_weighted_sentiment = sum(weighted_sentiment, na.rm = TRUE),
+    total_posts = sum(sentiment_count, na.rm = TRUE),
+    average_sentiment = total_weighted_sentiment / total_posts,  # Weighted average
+    .groups = 'drop'
+  )
+  
+ggplot(df_pl3, aes(x = date, y = average_sentiment, color = subreddit, linetype = factor(controversiality), group = interaction(subreddit, controversiality))) +
+  geom_line() +
+  geom_point(size = 1) +
+  #scale_y_log10(labels = function(x) format(x, scientific = FALSE)) +
+  scale_color_brewer(palette = "Dark2") +
+  scale_linetype_manual(values = c("solid", "dotted"), labels = c("No", "Yes")) +
+  geom_vline(xintercept = as.Date(c("2021-11-01", "2022-02-01", "2022-06-01", "2022-08-01")), linetype="dashed", color="deepskyblue4") +
+  labs(y = 'Total number of comments (log scale)', 
+       x = "Date", 
+       color = 'Subreddit', 
+       linetype = 'Controversiality', 
+       caption = 'Source: Reddit', 
+       title = 'Sentiment trend relatively stable over time',
+       subtitle='Evolution of sentiment by subreddit and type of comment') +
+  facet_grid(subreddit ~ env, scales = "free_y", labeller = labeller(env = as_labeller(c('false' = 'General', 'true' = 'Environmental')))) +
+  theme_minimal() +
+  theme(
+        legend.position="bottom",
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(color = "grey20", size = 10),
+        axis.text.y = element_text(color = "grey20", size = 10),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=16, hjust = 0.5),
+        plot.subtitle = element_text(size=12, hjust = 0.5)
+      )
+  
+```
+
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 8*</p><br><br>
+<div style="text-align: left;">
+
+### Goal VII.
+
+**Understand the role of external information in climate misinformation: how prevalent it is to include external sources, and how these sources influence controversy or sentiment**
+
+*Results*
+
+Finally, we wanted to understand how sentiment and climate misinformation are connected, and we investigated this in the environmental space. When looking at the split between controversial and non-controversial comments, we've found that posts that contain climate misinformation are generally more positive, and this difference is even greater if the post is controversial. Also, controversial posts tend to be much more likely to be neutral if they contain climate misinformation. This suggest that these misinformation materials spread through using positive or neutral (potentially academic-like) voice.
+
+```{r echo=FALSE, fig.width=10, fig.height=6}
+df_p2 <- df %>%
+  filter(env == 'true') %>% 
+  group_by(controversiality, skeptic_site) %>% 
+  mutate(perc_of_sentiment = round(100*sentiment_count/sum(sentiment_count), 2)) %>% 
+  mutate(env = factor(env, levels = c('false', 'true'), labels = c("General", "Environmental"))) %>% 
+  mutate(controversiality = factor(controversiality, levels = c('0', '1'), labels = c("Uncontroversial", "Controversial"))) %>% 
+  mutate(skeptic_site = factor(skeptic_site, levels = c('false', 'true'), labels = c("Not Skeptic", "Skeptic Site")))
+
+df_p2 %>% ggplot(aes(x = skeptic_site, y=perc_of_sentiment)) + geom_col(aes(fill=sentiment_result)) + facet_wrap("controversiality") +
+  scale_fill_brewer(palette = "RdYlBu") +
+  labs(y = 'Percentage of Comments', 
+       x = NULL, 
+       fill = 'Sentiment',
+       caption = 'Source: Reddit', 
+       title = 'Posts containing skeptic site links tend to be more positive',
+       subtitle='Breakdown of Sentiments By Known Source of Climate Misinformation and Controversiality') +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=14, hjust = 0.5),
+        plot.subtitle = element_text(size=12, hjust = 0.5))
+```
+
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 9*</p><br><br>
+<div style="text-align: left;"></div>

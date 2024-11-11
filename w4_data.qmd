@@ -1,0 +1,22 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Data
+
+## Reddit data
+
+## Selected subreddits
+
+For this specific purpose, we selected three subreddits for analysis. First, we selected r/climatechange, as this community is directly discussing climate change. Our expectation here is to find most posts discussing climate change, but relatively few climate skeptic posts. Second, we selected r/climateskeptic for a similar reason. Here, our expectation is the opposite. Finally, we selected r/conspiracy, to see the prevalence of climate conspiracy / skeptic claims in a space more prone towards discussion of these topics. In total, ~17m posts were included in the research.
+
+## Key aspects of the data
+
+The dataset leveraged has been acquired as part of the Massive Data Fundamentals course at Georgetown University in March 2024, and was accessed via AWS Big Data Teaching. The dataset is no longer publicly available. It contains metadata and content of reddit posts and comments from 2021 January to 2023 March across most subreddits.

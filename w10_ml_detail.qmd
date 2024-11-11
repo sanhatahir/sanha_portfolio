@@ -1,0 +1,251 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+  html:
+      embed-resources: true
+      code-fold: true
+      code-overflow: wrap
+---
+
+# Denialism
+
+This model that we are utilizing here is based on RoBERTa, an optimized version of the BERT LLM model. It was originally trained on paragraph-length online publications, identifying five distinct climate denial claims and a number of subclaims, that are summarized in Table 1: 
+
+<div style="text-align: center;">
+**Prevalent climate denial claims and subclaims**<br>
+![Table 1](../data/plots/nlp_table1.jpg)
+*Table 1*
+<div style="text-align: left;">
+
+### Technical Difficulties: 
+
+Our initial proposal was to utilize this model for our entire dataset. However, compute constraints and technical difficulties prevented us from doing so. In order to bypass this hurdle, we sampled comments from each subreddit and we illustrate The final distribution of our sample data in Figure 1, below: 
+
+
+```{r, fig.width=10, fig.height=6}
+
+library(plotly)
+library(RColorBrewer)
+library(tidyr)
+library(dplyr)
+library(waffle)
+library(ggplot2)
+
+overall_roberta = read.csv("../data/csv/pd_roberta_tags_for_goal_5.csv")
+dist_graph = aggregate(count ~ subreddit, data = overall_roberta, FUN = sum)
+fig <- plot_ly(dist_graph, x = ~subreddit, y = ~count, type = 'bar')
+fig <- fig %>% layout(title = "Fig 1: Distribution of Sampled Comments Across Subreddits",
+                      yaxis = list(title = 'Number of Comments'),
+                      xaxis = list(title = 'Subreddit'),
+                      barmode = 'group')
+fig
+
+```
+
+While this sampling prevents us from making inferences on the general Reddit landscape, we can still gleam insightful information about individual actors and general claims on these subreddits. We do so by leveraging the simpletransformers library to apply this model on this sampled dataset, and discuss important results below.
+
+### Goal VIII.
+
+**Identify the presence and prevalence of specific climate denial claims, such as ‘climate change isn’t real’ or ‘climate policies don’t work’.**
+
+*Results:*
+
+As a result of the application of this pretrained model, each comment was classified as either "No Claim", or as containing one of the five main claims. The latter were then further classifies as one of the 17 sub-claims, containing climate misinformation. Figure 2 illustrates the overall prevalence of the 5 claims across the three subreddits. 
+
+```{r, fig.width=10, fig.height=6}
+first_graph_df <- aggregate(count ~ claim_long + subreddit, data = overall_roberta, FUN = sum)
+df_wide <- spread(first_graph_df, key = subreddit, value = count)
+df_wide[is.na(df_wide)] <- 0
+
+df_wide <- df_wide %>%
+  mutate(climatechange_perc = climatechange / sum(climatechange, na.rm = TRUE) * 100,
+         climateskeptics_perc = climateskeptics / sum(climateskeptics, na.rm = TRUE) * 100,
+         conspiracy_perc = conspiracy / sum(conspiracy, na.rm = TRUE) * 100,)
+
+
+fig <- plot_ly(df_wide, x = ~climatechange_perc, y = ~claim_long, type = 'bar', orientation = 'h', name = 'r/climatechange')
+fig <- fig %>% add_trace(x = ~climateskeptics_perc, name = 'r/climateskeptics')
+fig <- fig %>% add_trace(x = ~conspiracy_perc, name = 'r/conspiracy')
+fig <- fig %>% layout(title = "Fig 2: Percentage Distribution of Claims Across Subreddits",
+                      yaxis = list(title = 'Claim Description'),
+                      xaxis = list(title = 'Percentage'),
+                      barmode = 'group')
+
+fig
+```
+
+The most striking characteristic in this graph is the prevalence of "No claims"; indicating that a majority of sampled comments were not classified by the custom RoBERTa model as climate-denying. 
+
+In particular, there are no such climate denying comments in the r/conspiracy comments at all! This may be because the sampled comments from this subreddit were not concerned with climate. 
+
+However, for the other two subreddits, there are comments which show signs of climate denialism. To investigate this further, we look at the distribution of claims that are being made in these subreddits, in figures 3.1-3.2: 
+
+
+
+```{r, fig.width=10, fig.height=6}
+
+library(gridExtra)
+
+
+first_graph_df_waffle_climate_change <- first_graph_df[first_graph_df$subreddit == "climatechange" & first_graph_df$claim_long != "No claim", ]
+waffle_climate_change <- ggplot(first_graph_df_waffle_climate_change, aes(fill = claim_long, values = count)) +
+  geom_waffle() +
+  coord_equal() +
+  theme_void() +
+  ggtitle("Figure 3.1: Distribution of Claims for r/climatechange") +
+  theme(legend.position = "bottom") 
+waffle_climate_change
+```
+The most dominant claim in this subreddit seems to be that the phenomenon global warming is not occurring at all, followed closely by the claim that human greenhouse gases are not causing the climate change. 
+
+The claim distribution for climateskeptics show a strikingly different pattern:
+
+```{r, fig.width=10, fig.height=3}
+first_graph_df_waffle_climate_skeptics <- first_graph_df[first_graph_df$subreddit == "climateskeptics" & first_graph_df$claim_long != "No claim", ]
+waffle_climate_skeptics <- ggplot(first_graph_df_waffle_climate_skeptics, aes(fill = claim_long, values = count)) +
+  geom_waffle() +
+  coord_equal() +
+  theme_void() +
+  ggtitle("Figure 3.2: Distribution of Claims for r/climateskeptics")  +
+  theme(legend.position = "bottom") 
+waffle_climate_skeptics
+``` 
+It shows here that these participants primarily claim that human greenhouse gases are not causing climate change at all. 
+The second most frequent claim, which is noticeably less frequent than the first claim, is that climate solutions will not work. 
+
+We can understand these claims in even more depth, by diving into the distribution of sub-claims, shown in figure 4 below:
+
+  
+```{r, fig.width=10, fig.height=6}
+second_graph_df <- aggregate(count ~ claim_long +subclaim_long + subreddit, data = overall_roberta, FUN = sum)
+
+
+second_graph_climate_change = second_graph_df[second_graph_df$subreddit == "climatechange" & second_graph_df$claim_long != "No claim",]
+second_graph_climate_change_level1 <- aggregate(count ~ claim_long, data = second_graph_climate_change, FUN = sum)
+second_graph_climate_change_level1$parent = ""
+second_graph_climate_change <- subset(second_graph_climate_change, select = -subreddit)
+colnames(second_graph_climate_change)[colnames(second_graph_climate_change) == "claim_long"] <- "parent"
+colnames(second_graph_climate_change)[colnames(second_graph_climate_change) == "subclaim_long"] <- "claim_long"
+union_df_climate_change <- rbind(second_graph_climate_change, second_graph_climate_change_level1)
+
+
+
+second_graph_climateskeptics = second_graph_df[second_graph_df$subreddit == "climateskeptics" & second_graph_df$claim_long != "No claim",]
+second_graph_climateskeptics_level1 <- aggregate(count ~ claim_long, data = second_graph_climateskeptics, FUN = sum)
+second_graph_climateskeptics_level1$parent = ""
+second_graph_climateskeptics <- subset(second_graph_climateskeptics, select = -subreddit)
+colnames(second_graph_climateskeptics)[colnames(second_graph_climateskeptics) == "claim_long"] <- "parent"
+colnames(second_graph_climateskeptics)[colnames(second_graph_climateskeptics) == "subclaim_long"] <- "claim_long"
+union_df_climateskeptics <- rbind(second_graph_climateskeptics, second_graph_climateskeptics_level1)
+
+
+
+fig <- plot_ly() 
+
+fig <- fig %>%
+  add_trace(
+    ids = union_df_climate_change$claim_long,
+    labels = union_df_climate_change$claim_long,
+    parents = union_df_climate_change$parent,
+    values = union_df_climate_change$count,
+    type = 'sunburst',
+    branchvalues = 'total',
+    maxdepth = 3,
+    domain = list(column = 0)
+  ) 
+
+
+fig <- fig %>%
+  add_trace(
+    ids = union_df_climateskeptics$claim_long,
+    labels = union_df_climateskeptics$claim_long,
+    parents = union_df_climateskeptics$parent,
+    values = union_df_climateskeptics$count,
+    type = 'sunburst',
+    branchvalues = 'total',
+    maxdepth = 3,
+    domain = list(column = 1)
+  ) 
+
+
+fig <- fig %>%
+  layout(
+    title = "Figure 4: Claims and Sub-claims for \nr/climatechange (left) & r/climateskeptics (right)",
+    grid = list(columns =2, rows = 1),
+    margin = list(l = 0, r = 0, b = 0, t = -1),
+    # Playing around with colots 
+    sunburstcolorway = c(
+      "#636efa","#EF553B","#00cc96","#ab63fa","#19d3f3",
+      "#e763fa", "#FECB52","#FFA15A","#FF6692","#B6E880"
+    )
+    
+  ) 
+
+fig
+
+```
+
+Once again, there are dominating trends that stand out in these diagrams. 
+
+The most common explanations given by these authors is either that the weather hasn't changed or that this change is part of the natural cycle variations. 
+While there are nuances to be seen in the less frequent claims - and their underlining subclaims - this analysis does reveal that there is a general denial about the phenomenon of climate change itself, and there is less discussion about the possible solutions or scientific research around this phenomenon. 
+
+
+
+### Goal IX.
+
+**Understand what attributes of posts influence climate misinformation: see if the presence of climate denial claims can be predicted based on a number of characteristics of posts**
+
+*Results:*
+
+While we used a pre-trained BERT model for the labeling of the claims, we also want to develop our own algorithms that are trained specifically on the comments of the three subreddits we have highlighted thus far. We are not considering the sub-claims at this time. 
+
+We select two machine learning models for this purpose: 
+
+*1. Logistic Regression:* <br>
+A fundamental machine learning algorithm, Logistic Regression is primarily used for binary classification tasks, where the goal is to predict the probability that an observation belongs to a particular class. It models the relationship between the independent variables and the probability of the outcome using the logistic function, also known as the sigmoid function. Logistic regression is popular due to its simplicity, interpretability, and efficiency, making it a common choice for classification tasks.
+
+*2. Gradient-Boosted Trees (GBT) Classifier:* <br>
+This algorithm works by combining multiple decision trees in a sequential manner, where each tree corrects the errors of its predecessors. GBTs are known for their high predictive accuracy and robustness against overfitting. 
+
+We hope that the differences in the logical flow of these algorithms will help shed light on the relationship between the label classification, and our selected features. 
+
+Our dependent feature is whether or not a comment contains claims denying climate crisis. The true labels have already been acquired via the RoBERTa model and are converted to binary variables. 
+
+An important decision we make here is to oversample the minority class i.e. oversample observations that are identified as claims, in order to rectify the label imbalance in the dataset.
+
+The overall flow of the model, including all transformations, is shown below: 
+
+<div style="text-align: center;">
+![Table 2: Model Workflow ](../data/plots/ML_workflow.png)
+<div style="text-align: left;">
+
+
+The results and evaluation metrics for both these algorithms is shown below, in Figure 5: 
+
+<div style="text-align: center;">
+![Figure 5: Evaluation Metrics for Model Comparison](../data/plots/model_comparison_accuracy_oversampled.jpg)
+<div style="text-align: left;">
+
+
+Following correction for class imbalance, both models perform well and almost similarly. 
+However, we did want to experiment with different hyperparameters, and we select regularization for the Logistic Regression. Results for this are shown below, in Figure 6: 
+
+
+<div style="text-align: center;">
+![Figure 6: Hyperparameter Tuning](../data/plots/hyperparameter_lr_oversampled.jpg)
+<div style="text-align: left;">
+
+The lack of insight in this illustration shows that regularization does not have a significant affect on our model. This may be because we have already been selective in the independent features, and are using a relatively simple model. 
+However, explicitly setting the regularization parameters does improve overall accuracy of the model. 
+
+We use this best model to then create a profile, of what a comment that makes these denial claims looks like and we illustrate in figure 7 below:  
+
+<div style="text-align: center;">
+![Figure 7: Characteristics of denial-claim comment](../data/plots/fig_7_inference_profile.png)
+<div style="text-align: left;">
+
+

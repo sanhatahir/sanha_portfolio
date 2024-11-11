@@ -1,0 +1,25 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Team
+
+## Project and team setup 
+
+This project was part of the Massive Data Fundamentals course and results were presented in class. The team received feedback and support from Professor Arora and the course's Teaching Assistant, as well as peer feedback from some of our classmates.
+
+## Team members
+
+The team was made up of four people:
+
+- Keya Sengupta
+- Sanha Tahir
+- Brad Wayne
+- Fanni Varhelyi

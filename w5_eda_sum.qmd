@@ -1,0 +1,18 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# EDA summary
+
+The goal of this exploratory analysis was to understand the fundamentals of the reddit dataset, the differences between the three subreddits we're investigating, and to do some early measurements on environmental topic presence and how it relates to controversy. In addition, we've also looked at authors to understand if there's any trend of centralization and whether it would make sense to try and identify super spreaders. In summary, we've identified the presence of climate topics in all three subreddits with some notable differences, both among 'normal' posts and controversial posts. 
+
+Most interestingly, our analysis found that controversial environmental posts started to increase after mid-22 in the *r/conspiracy* space, a trend not replicated in the other spaces, and well outpacing the increase in non-environmental controversial posts. In addition, we've seen a stronger concentration of authors in this space who posts controversial environmental posts. Both of these findings reinforce the validity of our further planned analyses: understanding what are the exact climate denial claims circulated, and whether this change in intensity also corresponds to a change in main messaging; and conducting a network analysis to understand how misinformation spreads and identify if any of these authors are central nodes in the network - our EDA indicates some of them are likely to be.
+
+Regarding the other two subreddits (climate change and climate skepticism), we've seen less clear trends. Controversial and 'normal' comments seem to follow similar trends, with the *r/climateskeptic* seeing a small uptick of controversial environmental posts since 2022, and *r/climatechange* space being relatively stable.

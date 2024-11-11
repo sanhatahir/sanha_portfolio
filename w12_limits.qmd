@@ -1,0 +1,40 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Discussion
+
+We've received feedback on this project in multiple stages, from Professor Arora and from our peers in Team 5.
+
+Here's a brief summary of changes implemented based on these comments:
+
+**Project Plans**
+
+We've had to adjust our plans as we faced some difficulties with implementing the RoBERTa model. We decided to leverage sampling as per Professor Arora's feedback, and replaced a question and adjusted another's technical proposal to reflect this.
+
+
+**EDA work**
+
+Inspired by Team 5, and also acting on their feedback about annotating graphs, we added key US climate policy events to our timelines and interpretation.
+
+
+**NLP work**
+
+We used feedback and support from the TA to adjust some technical elements of the notebooks in order to run and implement NLP analysis.
+
+
+**ML work**
+
+We relied on both Professor Arora's feedback and TA support to develop this section. We've leveraged feedback in setting up our container, and also with specifics of the RoBERTa model. In the end, we sampled a small number of comments from each subreddit as per the suggestion of Professor Arora.
+
+
+**Website/results**
+
+We've refined the website since the last submission to make it more visual, more coherent, and more appropriate for business environment. As an example, we've added an executive summary, and also added key takeaways to chart titles.

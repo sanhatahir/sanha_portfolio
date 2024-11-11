@@ -1,0 +1,464 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Detailed EDA results
+
+### Goal I.
+
+**Determine the basic characteristics of the climate-related reddit spaces, and understand the prevalence of controversial and climate-related controversial posts across the different spaces.**
+
+*Results:*
+
+First of all, we wanted to understand the basic characteristics of the three investigated spaces: *r/conspiracy*, *r/climateskeptic*, and *r/climatechange*. *Table 1* provides a summary of all posts, submissions and comments per subreddit. Overall, we can see that r/conspiracy submissions engage the community the most: the share of comments were the largest here. *r/climateskeptic* is also more engaging for the community than the *r/climatechange* submissions. This seems to corroborate the narrative that negative, sensational, controversial topics hold our attention better.
+
+In this initial phase, we also wanted to make sure we clean the data from erroneous records: we filtered out empty comments, and comments with a missing timestamp. *Table 1* also contains the final number of comments we're using for further analysis.
+
+
+
+<div style="text-align: center;">
+**Summary statistics**<br>
+![Table 1](../data/plots/Table1.png)
+<br><p style="color:gray;font-size:12px;">*Table 1*</p><br><br>
+<div style="text-align: left;">
+
+
+Next, we wanted to understand the prevalence of both environmental topics and controversy in comments. Since we assume misinformation is mostly spreading in comments, most of the EDA focuses on comments, apart from the section on authors, where submissions are also included in our research. Controversial comments were identified based on the data's own controversial feature: if a comment receives a similar amount of upvotes and downvotes, it's identified as controversial. Regarding environmental comments, we've experimented with a couple of selections and finally aligned on a list of words, and if any of these were in the text of the comment, we've identified it as environmental. Examples are 'environment', 'renewable', 'solar', or 'global warming'. We're fully aware that some of these comments aren't necessarily what we're looking for, and this simple search might miss comments dealing with the topic without mentioning these specific words - a more nuanced NLP method will be implemented later to more accurately identify these comments, and to identify the ones spreading climate misinformation.
+
+*Table 2* contains the results of these two analyses. As can be expected, controversial comments are mostly present in the *r/conspiracy* subreddit. A large proportion of the *r/climatechange* and *r/climateskeptic* comments were identified as environment-related. While only about 1% of the r/conspiracy subreddit seems to be related to environmental topics, it's still almost 200 thousand records, which gives a good basis for further analysis.
+
+<div style="text-align: center;">
+**Presence of controversial and environmental comments**<br>
+![Table 2](../data/plots/Table2.png)
+<br><p style="color:gray;font-size:12px;">*Table 2*</p><br><br>
+<div style="text-align: left;">
+
+Finally, we wanted to understand the explicit relationship between these two features: more precisely, if a comment is related to environmental topics, is it more likely to be also controversial? To analyze this, we conducted three chi-square tests on the respective subreddits. The related contingency tables can be seen in *Table 3, Table 4 and Table 5*. For all three subreddits, we found a significant relationship (99% confidence level) between controversial posts and environmental topics. In other words, if a comment is related to the environment, there's a higher proportion of it that's also controversial than what we would normally expect. This difference was relatively small in the *r/climateskeptic* space, but a sizable one in the *r/climatechange* space, and especially large in the *r/conspiracy* space. Environmental topics such as climate change seem to be quite contested even though the scientific consensus behind them.
+
+```{r, echo=FALSE}
+library(ggplot2)
+library(viridis)
+library(tidyverse)
+library(RColorBrewer)
+library(kableExtra)
+library(stargazer)
+library(plotly)
+
+df <- read.csv('../data/csv/growth_over_time.csv')
+  
+df$date <- as.Date(paste(df$year, df$month, "01", sep = "-"), "%Y-%m-%d")
+  
+#df_filtered <-  df[df$env == 1, ]
+
+df_total_env <- df %>%
+  group_by(subreddit, env) %>%
+  summarise(count_of_comments_total = sum(count_of_comments, na.rm = TRUE), .groups = 'drop')
+
+df_total_con <- df %>%
+  group_by(subreddit, controversiality) %>%
+  summarise(count_of_comments_total = sum(count_of_comments, na.rm = TRUE), .groups = 'drop')
+
+df_total_env_con <- df %>%
+  group_by(subreddit, env, controversiality) %>%
+  summarise(count_of_comments_total = sum(count_of_comments, na.rm = TRUE), .groups = 'drop')
+
+# Let's do a simple statistical testing: check with chi-square if there's any dependency between the environmental and controversial comments. To do so, the data needs to be reshaped and split into 3 contingency tables, and then the chi square test can be performed.
+df_wide <- df_total_env_con %>%
+  rename(Environmental = env, Controversial = controversiality) %>%
+  mutate(
+    Environmental = factor(Environmental, levels = c(0, 1), labels = c("Environmental: No", "Environmental: Yes")),
+    Controversial = factor(Controversial, levels = c(0, 1), labels = c("No", "Yes"))
+  ) %>%
+  pivot_wider(names_from = Controversial, values_from = count_of_comments_total, names_prefix = "Controversial: ") %>%
+  group_by(subreddit, Environmental) %>%
+  summarise(`Controversial: No` = sum(`Controversial: No`, na.rm = TRUE), `Controversial: Yes` = sum(`Controversial: Yes`, na.rm = TRUE))
+
+list_of_tables <- split(df_wide, df_wide$subreddit)
+contingency_tables <- lapply(list_of_tables, function(subdf) {
+  xtabs(cbind(`Controversial: No`, `Controversial: Yes`) ~ Environmental, data = subdf)
+})
+
+
+climatechange <- as.data.frame.matrix(contingency_tables[[1]])
+climateskeptic <- as.data.frame.matrix(contingency_tables[[2]])
+conspiracy <- as.data.frame.matrix(contingency_tables[[3]])
+
+
+kable(climatechange, format = "html", 
+      caption = "Relationship between environmental and controversial posts") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = F, 
+                position = "center") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c(" " = 1, "r/climatechange subreddit" = 2))
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Table 3*</p><br><br>
+<div style="text-align: left;">
+```{r, echo=FALSE}
+
+kable(climateskeptic, format = "html", 
+      caption = "Relationship between environmental and controversial posts") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = F, 
+                position = "center") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c(" " = 1, "r/climateskeptic subreddit" = 2))
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Table 4*</p><br><br>
+<div style="text-align: left;">
+
+```{r, echo=FALSE}
+
+kable(conspiracy, format = "html", 
+      caption = "Relationship between environmental and controversial posts") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = F, 
+                position = "center") %>%
+  column_spec(1, bold = T) %>%
+  add_header_above(c(" " = 1, "r/conspiracy subreddit" = 2))
+
+
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Table 5*</p><br><br>
+<div style="text-align: left;">
+```{r, echo=FALSE, results = 'hidden'}
+chi_square_results <- lapply(contingency_tables, chisq.test)
+
+```
+
+
+### Goal II.
+
+**Determine and compare the evolution of the presence of environmental concepts across various subreddits.**
+
+*Results:*
+
+When looking at environmental and controversial topics across the three investigated years, we wanted to identify if there's a difference in trends across any of the subreddits over time. *Figure 1* displays the total number of comments per subreddit per month, split left to right between General and Environmental themed comments. Dotted lines refer to controversial comments, and the scale is logarithmic for easier comparison. When looking at environmental versus general comments, the trends seem to be relatively similar. One notable exception is the amount of controversial environmental posts in the *r/conspiracy* reddit space, where there seems to be an uptick after 2022 January.
+
+
+```{r, fig.width=10, fig.height=6}
+
+ggplot(df, aes(x = date, y = count_of_comments, color = subreddit, linetype = factor(controversiality), group = interaction(subreddit, controversiality))) +
+  geom_line() +
+  geom_point(size = 1) +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE)) +
+  scale_color_brewer(palette = "Dark2") +
+  scale_linetype_manual(values = c("solid", "dotted"), labels = c("No", "Yes")) +
+  labs(y = 'Total number of comments (log scale)', 
+       x = "Date", 
+       color = 'Subreddit', 
+       linetype = 'Controversiality', 
+       caption = 'Source: Reddit', 
+       title = 'Environmental controversy rising in r/conspiracy and r/climateskeptics since early 2022',
+       subtitle='Evolution of controversial presence by subreddit') +
+  facet_grid(subreddit ~ env, scales = "free_y", labeller = labeller(env = as_labeller(c('0' = 'General', '1' = 'Environmental')))) +
+  theme_minimal() +
+  theme(
+        legend.position="bottom",
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(color = "grey20", size = 10),
+        axis.text.y = element_text(color = "grey20", size = 10),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=16, hjust = 0.5),
+        plot.subtitle = element_text(size=14, hjust = 0.5)
+      )
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 1*</p><br><br>
+<div style="text-align: left;">
+
+To investigate this further, we zoomed in on the controversial space, and calculated the percentages of controversial comments in both general and environmental topics. The results can be seen in *Figure 2*. When looking at the *r/climatechange* space, the share of controversial comments seem to be declining in both topics. On the other hand, controversy is slowly on the rise in the *r/climateskeptic* space. Both of these trends are relatively minor. The *r/conspiracy subreddit* has two sudden changes. First of all, there seem to be a negative trend already ongoing or starting around early 2021, a trend that suddenly reversed around the beginning of 2022, and controversy has been on the rise ever since. When looking at environmental controversy, the change is even more pronounced: before mid-2022, general and environmental controversy had a similar level, but after that, controversy disproportionately increased in environmental comments. There seems to be a connection between controversy and environmental topics in the *r/conspiracy* space, and it's even more pronounced than in other, general topics.
+
+To investigate this phenomenon, we looked at critical environmental policy events in the United States to see if we can find any events that might explain these shifts. On the decline starting at the beginning of 2021, one explanation could be the end of the Covid-19 crisis that potentially led to a decrease in controversial claims. Another explanation could be a stronger moderation or increased activity elsewhere following January 6. In any case, the increase in controversial and especially in environment-related controversial posts seem to coincide in time with the time period when US policy debate around climate investment and pollution control has also intesified. Around October-November 2021, the House passed legislation related to infrastructure, social benefits, and climate, called Build Back Better. That bill did not clear the Senate, but further discussions led to the passing of the Inflation Reduction Act in August 2022, a bill focused heavily on climate subsidies. At the same time, the Supreme Court started hearing arguments in February 2022 and made a decision in June 2022 about the Environmental Protection Agency (EPA)'s right to control pollution, another key environmental issue that was debated in that time period. What we're seeing in the *r/conspiracy* subreddit might be activity reflecting on these events. We've also seen a general increase in the total number of comments in the *r/climateskeptic* and *r/climatechange* spaces (can be seen on Figure 1), which might also be related to these policy debates.
+
+```{r, fig.width=10, fig.height=6}
+# To calculate the %-es for better visualizations, I will calculate the totals and then the % of cont / non-cont posts per month, and then will visualize that.
+total_posts <- aggregate(count_of_comments ~ date + subreddit + env, data = df, FUN = sum)
+
+controversial_counts <- aggregate(count_of_comments ~ date + subreddit + env + controversiality, data = df, FUN = sum)
+
+df_percentage <- merge(controversial_counts, total_posts, by = c('date', 'subreddit', 'env'), suffixes = c('_controversial', '_total'))
+df_percentage$percentage <- with(df_percentage, count_of_comments_controversial / count_of_comments_total * 100)
+
+df_filt_2 <- df_percentage[df_percentage$controversiality == 1, ]
+
+ggplot(df_filt_2, aes(x = date, y = percentage, color = subreddit, linetype = factor(env), group = interaction(subreddit, env))) +
+  geom_line() +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  scale_linetype_manual(values = c("solid", "dotted"), labels = c("No", "Yes")) +
+  geom_vline(xintercept = as.Date(c("2021-11-01", "2022-02-01", "2022-06-01", "2022-08-01")), linetype="dashed", color="deepskyblue4") +
+  annotate("text", x = as.Date('2021-10-15'), y = 9, label = "Build back debate", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-01-15'), y = 9, label = "SC debates EPA", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-05-15'), y = 10.5, label = "SC decision on EPA", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-07-15'), y = 11, label = "IRA passed", angle = 90, color='deepskyblue4') +
+  labs(y = 'Percentage of controversial comments', 
+       x = "Date", 
+       color = 'Subreddit',
+       linetype = 'Environmental topic or not',
+       caption = 'Source: Reddit', 
+       title = 'Climate controversy has been rising since US policy debates',
+       subtitle = 'Evolution of controversy by subreddit and topic, %') +
+  theme_minimal() +
+  theme(
+        legend.position="right",
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(color = "grey20", size = 10),
+        axis.text.y = element_text(color = "grey20", size = 10),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=16, hjust = 0.5),
+        plot.subtitle = element_text(size=14, hjust = 0.5)
+      )
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 2*</p><br><br>
+<div style="text-align: left;">
+
+
+We also wanted to understand if well-known sources of climate misinformation were present in these spaces. To investigate this, we used a list of 53 outlets (websites, newspapers, blogs), collected by Coen et. al (2021) to see if these specific sites are mentioned and referenced in the submissions and the comments. We focused on both submissions and comments to gain a more nuanced understanding, and we also looked at the number of authors referencing these media outlets. The top 10 most common climate denial sources, and the associated statistics, can be found in *Table 6*. 
+</div>
+
+
+<div style="text-align: center;">
+**Top 10 climate denial sources**<br>
+![Table 6](../data/plots/Table6.PNG)<br>
+<p style="color:gray;font-size:12px;">*Table 6*</p><br><br>
+<div style="text-align: left;">
+
+In general, it seems like these outlets are used frequently, but by a small number of authors, and they generate a sizable community engagement and many replies. Understanding in more detail the prevalence of these links and sources, and how it influences conversations, will be a focus point of our further research. The cumulative presence of these outlets can be seen on *Figure 3*.
+
+```{r, fig.width=10, fig.height=6}
+sites <- read.csv('../data/csv/skeptic_site_submissions.csv')
+
+top_sites <- sites %>%
+  group_by(skeptic_site) %>%
+  summarize(total = sum(posts)) %>%
+  arrange(desc(total)) %>%
+  top_n(10, total) %>%
+  pull(skeptic_site)
+
+sites %>%
+  filter(skeptic_site %in% top_sites) %>%
+  complete(skeptic_site, subreddit, fill = list(posts = 0)) %>%
+  ggplot(aes(x = fct_rev(skeptic_site), y = posts, fill = subreddit)) +
+  geom_col(position = 'dodge') +
+  scale_fill_brewer(palette = "Dark2") +
+  coord_flip() +
+  labs(y = 'Number of posts linking to climate misinformation sites', 
+       x = NULL, 
+       fill = 'Subreddit',
+       linetype = 'Environmental topic or not',
+       caption = 'Source: Reddit', 
+       title = 'Most popular climate misinformation websites',
+       subtitle='Total number of posts mentioning site per subreddit') +
+  guides(fill = guide_legend(hjust = -5,
+    title.position = "top",
+    label.position = "left",
+    nrow = 3,
+    )) + 
+  theme_minimal() +
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1),
+        legend.background = element_rect(color = "black", fill = "white"),
+        legend.box.margin = margin(10, 10, 10, 10),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=14, hjust = 0.5),
+        plot.subtitle = element_text(size=14, hjust = 0.5)
+      )
+
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 3*</p><br><br>
+<div style="text-align: left;">
+
+
+### Goal III.
+
+**Understand more about the posting patterns of sources of environmental controversiality, and if there are any users spreading climate-related controversy.**
+
+*Results:*
+
+Similarly to our earlier analysis, we looked at the number of distinct authors in all three subreddit spaces (regarding comments), and the percentage of distinct authors of either general or environmental comments. The results can be seen on *Figure 4*. The difference is especially striking in the controversy space: it seems like a smaller percentage of distinct authors generate environmental controversy. As we've seen in *Figure 2*, the percentage of environmental comments is similar or even higher than the general comments, so this indicates the presence of central authors who spread controversial content and thus likely spread misinformation.
+
+```{r, fig.width=10, fig.height=6}
+# To calculate the %-es for better visualizations, I will calculate the totals and then the % of cont / non-cont posts per month, and then will visualize that.
+total_aut <- aggregate(count_of_authors ~ date + subreddit + env, data = df, FUN = sum)
+
+controversial_aut <- aggregate(count_of_authors ~ date + subreddit + env + controversiality, data = df, FUN = sum)
+
+df_percentage2 <- merge(controversial_aut, total_aut, by = c('date', 'subreddit', 'env'), suffixes = c('_controversial', '_total'))
+df_percentage2$percentage <- with(df_percentage2, count_of_authors_controversial / count_of_authors_total * 100)
+
+df_filt_3 <- df_percentage2[df_percentage2$controversiality == 1, ]
+
+ggplot(df_filt_3, aes(x = date, y = percentage, color = subreddit, linetype = factor(env), group = interaction(subreddit, env))) +
+  geom_line() +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  geom_vline(xintercept = as.Date(c("2021-11-01", "2022-02-01", "2022-06-01", "2022-08-01")), linetype="dashed", color="deepskyblue4") +
+  annotate("text", x = as.Date('2021-10-15'), y = 14, label = "Build back debate", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-01-15'), y = 14, label = "SC debates EPA", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-05-15'), y = 16, label = "SC decision on EPA", angle = 90, color='deepskyblue4') +
+  annotate("text", x = as.Date('2022-07-15'), y = 16, label = "IRA passed", angle = 90, color='deepskyblue4') +
+  scale_linetype_manual(values = c("solid", "dotted"), labels = c("No", "Yes")) +
+  labs(y = 'Percentage of controversial authors', 
+       x = "Date", 
+       color = 'Subreddit',
+       linetype = 'Environmental topic or not',
+       caption = 'Source: Reddit', 
+       title = 'Less authors are responsible for controversial climate posts',
+       subtitle='Evolution of controversy by subreddit, %') +
+  theme_minimal() +
+  theme(
+        legend.position="right",
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(color = "grey20", size = 10),
+        axis.text.y = element_text(color = "grey20", size = 10),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=16, hjust = 0.5),
+        plot.subtitle = element_text(size=14, hjust = 0.5)
+      )
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 4*</p><br><br>
+<div style="text-align: left;">
+
+To build on our findings regarding the misinformation-related external sources, we looked at individual authors, and how many posts and distinct sites are related to them, as well as the engagement they generated. The top 10 authors associated with these sites can be seen in *Table 7*.
+
+<div style="text-align: center;">
+**Author-level presence of known misinformation links**<br>
+![Table 7](../data/plots/Table7.PNG)
+<p style="color:gray;font-size:12px;">*Table 7*</p><br><br>
+<div style="text-align: left;">
+
+
+In total, we've found 93 authors who posted and cited these sources. The number of posts related to the most frequent posters can be seen in *Figure 5*. When looking at proportions, 73% of posts spreading misinformation were created by just two authors. 
+This indicates these authors are major nodes of misinformation, and investigating the networks they build and how they disseminate this information will be a future focus of this research.
+
+```{r, fig.width=10, fig.height=6}
+authors <- read.csv('../data/csv/skeptic_site_submissions_authors.csv')
+
+authors %>%
+  mutate(author = ifelse(author %in% c('LackmustestTester', 'logicalprogressive'),
+                         author,
+                         'Everyone Else Combined')) %>%
+  group_by(author) %>%
+  summarize(total_posts = sum(posts),
+            distinct = max(distinct_sites)) %>%
+  arrange(total_posts) %>%
+  filter(author != '[deleted]') %>%
+  mutate(label = paste(total_posts, "posts", sep = '\n')) %>%
+  ggplot(aes(x = fct_rev(fct_reorder(author, total_posts, .fun='max')), y = total_posts)) +
+  geom_col(fill = '#1B9E77') +
+  geom_text(aes(label = total_posts),            
+            position = position_stack(vjust = 0.5),   
+            color = "white",               
+            size = 8,                       
+            fontface = "bold")     +
+  labs(y = '# posts linking to climate misinformation sites', 
+       x = 'Reddit users',
+       caption = 'Source: Reddit', 
+       title = 'Two users account for 73% of climate misinformation site links',
+       subtitle='Number of posts per reddit user') +
+  theme_minimal() +
+  theme(
+        axis.text.x = element_text(color = "grey20", size = 10),
+        axis.title.x = element_text(size=12),
+        plot.caption = element_text(size=8),
+        plot.title = element_text(size=16, hjust = 0.5),
+        plot.subtitle = element_text(size=14, hjust = 0.5),
+        axis.text.y = element_blank()
+      )
+
+#brewer.pal(3, "Dark2")
+
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 5*</p><br><br>
+<div style="text-align: left;">
+
+### Goal IV.
+
+**Understand the presence and prevalence of specific environment-related words and phrases across subreddits in both general and controversial comments.**
+
+Finally, we wanted to understand the presence of specific environmental phrases across all three subreddits, specifically for comments identified as controversial. As a reminder, the overall higher likelihood of environmental-related comments being controversial was already proven; our goal was to understand if any specific phrase or word had a notable frequency. Figure 7 showcases the results, normalized for comparability. Interestingly, out of all the phrases, climate was the most prevalent, indicating a strong correlation between climate-related posts and controversiality. Nuclear was also a high frequency keyword, but only in *r/conspiracy*, while fossil fuel and global warming were more likely to be found in *r/climatechange* and *r/climatesceptic*. This indicates that while controversial environmental and climate comments are present in all three subreddits, the specific content of these comments might be quite different. A more sophisticated NLP method is needed to compare the three spaces.
+
+```{r, fig.width=10, fig.height=6}
+heatm <- read.csv('../data/csv/count_of_dummies.csv')
+
+total_posts2 <- df %>%
+  filter(env == 1) %>%
+  filter(controversiality == 1) %>%
+  aggregate(count_of_comments ~ subreddit, FUN = sum)
+
+# I will normalize the data otherwise the larger number of posts in r/conspiracy would overwhelm the model
+normalized_data <- heatm %>%
+  filter(env == 1) %>%
+  filter(controversiality == 1) %>%
+  left_join(total_posts2, by = "subreddit") %>%
+  mutate(across(starts_with("count_of"), ~ ./count_of_comments, .names = "norm_{.col}")) %>%
+  select(-count_of_comments, -X, -month, -year, -env, -norm_count_of_comments) %>%
+  group_by(subreddit, controversiality) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>%
+  select(-matches("^count")) %>%
+  rename_with(.fn = ~gsub("norm_count_of_", "", .x), .cols = everything())
+  
+
+long_data <- normalized_data %>%
+  pivot_longer(
+    cols = -c(subreddit, controversiality),
+    names_to = "phrase",
+    values_to = "frequency"
+  )
+
+# Now the heatmap
+fig <- ggplotly(ggplot(long_data, aes(x = subreddit, y = phrase, fill = frequency)) +
+  geom_tile() + 
+  #scale_fill_gradient("low" = "#1B9E77", "high" = "#7570B3") +
+  scale_fill_viridis_c(option = "C") +
+  labs(title = "Normalized Phrase Frequency shows climate,\nnuclear, green are the most frequent keywords",
+       x = "Subreddit",
+       y = "Environmental phrase",
+       fill = "Frequency") +
+  theme_minimal() +
+  theme(
+        axis.text.x = element_text(color = "grey20", size = 8, angle = 45, hjust = 1),
+        axis.text.y = element_text(color = "grey20", size = 8),
+        axis.title.x = element_text(size=9),
+        axis.title.y = element_text(size=9),
+        plot.caption = element_text(size=6),
+        plot.title = element_text(size=12, hjust = 0.5),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 7)
+      )) 
+config(fig, scrollZoom = FALSE, displayModeBar = FALSE) 
+# "#1B9E77" "#D95F02" "#7570B3"
+```
+<div style="text-align: center;">
+<p style="color:gray;font-size:12px;">*Figure 6*</p><br><br>
+<div style="text-align: left;">

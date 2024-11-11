@@ -1,0 +1,20 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+    html:
+        embed-resources: true
+        code-fold: true
+        code-overflow: wrap
+---
+# Executive summary
+
+The goal of our research was to understand climate-related misinformation on Reddit in the specific subreddits of *r/climatechange*, *r/climatesceptic*, and *r/conspiracy*. We've found early on that comments tagged as controversial, meaning a large number of 'upvotes' and 'downvotes' on the same comment, and environmental comments as tagged by us using a select number of keywords, were more likely to occur together. We've also found that a few authors were very likely to be the author of posts containing well-known climate denial sources. We've also found that posts containing this misinformation were more likely to be positive or neutral in sentiment than general posts. While we've seen differences among subreddits, the general picture was the same.
+
+To investigate this further, we've used a pre-trained LLM model, RoBERTa, to see what are the prevalent climate denial claims in these spaces. Overall, we've found that the two most prevalent denials were 'Climate change isn't happening' and 'Human emissions are not the source of climate change'. This finding was quite alarming as generally what is being seen in other spaces is the rise of claims centered around 'Climate solutions don't work' and 'Climate science isn't reliable', with much lesser focus on climate change not happening (e.g., Coen et al., 2021, CCDH, 2024). A key difference between these studies and ours is that they were investigating conetent mostly backed by known sources of climate misinformation, such as conservative think tanks. Here, the source of misinformation (while often quoting some of these identified sources) were individuals, and the belief that climate change isn't happening or isn't caused by humans seem to be much more prevalent than we've anticipated.
+
+Zooming in on the differences, the most prevalent claims in both *r/climatechange* and *r/climatesceptic* are centered around either the Earth's natural cycles as the source of global warming, or the denial of the increased frequency of extreme weather events. But in *r/climatechange*, the next most popular claim is how CO2 is beneficial for humans and the environmental, while there seem to be a much stronger focus in the *r/climatesceptic* on how climate policies and technologies doesn't work.
+
+Finally, we wanted to understand the network characteristics and how misinformation spreads and if there are 'superspreaders'. When looking at the broader community, we've found that typically, authors who spread known climate misinformation sources are only likely to discuss one source. These users seem to be not making a concerted effort to spread misinformation systematically. We've also identified two sources that stood out in popularity when looking at the number of people who interacted with them: *wattsupwiththat.com* and *notrickszone.com*. When looking at specific climate misinformation claims, we've identified a couple of authors who typically engage in the spreading of misinformation and manage to generate significant traffic on their posts. Most notably, *logicalprogressive* and *LackmustestTester* are associated with the bulk of the climate denial claims we've investigated.

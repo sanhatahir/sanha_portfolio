@@ -1,0 +1,64 @@
+---
+execute:
+  warning: false
+  echo: false
+
+format:
+  html:
+      embed-resources: true
+      code-fold: true
+      code-overflow: wrap
+---
+# Network analysis
+
+### Goal X.
+
+**Understand how prevalent misinformation spreading is, and who are the super-spreaders by understanding the relationships between submissions, comments, and specific users.**
+
+To begin this analysis, we can visualize the network between authors and known sources of misinformation using a network graph. This graph highlights that most people that spread misinformation or comment on posts including it are only associated with one source of it. A much smaller number post content from multiple misinformation sources. We can also see that some sources of misinformation are much more popular than others: much more authors are associated with `wattsupwiththat.com` and `notrickszone.com` than the other websites. One such author is a user called "AutoModerator", presumably a bot, which is associated with almost all of the known skeptic sites - this is likely indicative that these are known sources of misinformation that a bot could be used to identify. Users with names less indicative of a boy are also associated with multiple sources of misinformation, eg: "Mindful-O-Melancholy", who is associated with five of the known sources.
+
+
+```{r echo=FALSE}
+library(tidyverse)
+library(igraph)
+library(networkD3)
+
+df <- read.csv('../data/csv/comments_sites_joined.csv') %>% group_by(author, skeptic_site) %>% count()
+p <- simpleNetwork(df, 1, 2)
+p
+```
+
+When we create a network graph to indicate relationships between authors and posts containing climate misinformation, we can see that for all the posts associated with climate misinformation, only a few have generated significant traffic, and a single author ("logicalprogressive") is associated with the bulk of the climate skeptic posts. This author has submissions across both the `climateskeptics` and the `conspiracy` subreddits, and was previously identified as a source of misinformation. We can also see that comment authors like "disco-peanut" have numerous authors with whom they share threads, most of which are also associated with logicalprogressive's posts.
+
+```{r echo=FALSE}
+links <- read.csv('../data/csv/comments_sites_joined.csv') %>% add_count(author, skeptic_site) %>% mutate(submission_author=as.numeric(factor(submission_author)), author=as.numeric(factor(author))) %>% select(n, submission_author, author) %>% filter(n > 20)
+nodes <- read.csv('../data/csv/comments_sites_joined.csv') %>% select(author, submission_author)
+
+click <- 'alert(d.name);'
+f = forceNetwork(Links = links, Nodes=nodes,
+             NodeID="author", Group="submission_author",
+             opacity = 1, legend=TRUE, clickAction=click)
+
+f
+```
+
+When we instead plot the network of authors connected to specific climate denial claims, as identified by Roberta, we find that certain claims are much more prominent than others - many authors assert that climate change is the result of "natural cycles", or that there is "no evidence for GHG warming effect".
+
+
+```{r echo=FALSE}
+labels = read.csv('../data/csv/pd_roberta_tags_for_goal_5.csv') %>% select(label_model, subclaim) %>% distinct()
+df <- read.csv('../data/csv/roberta_tags.csv') %>% inner_join(labels, by=c("labels"="label_model"))
+
+links <- df %>% add_count(author) %>% mutate(author=as.numeric(factor(author)), subclaim=as.numeric(factor(subclaim))) %>% select(author, subclaim, parent_id)
+nodes <- df %>% add_count(author) %>% select(author, subclaim)
+
+f = forceNetwork(Links = links, Nodes=nodes,
+                NodeID="author", Group="subclaim",
+               opacity = 0.5, legend=TRUE)
+
+saveNetwork(f, "f.html")
+
+library(webshot)
+webshot::install_phantomjs()
+webshot("f.html", "network.png", zoom=0.5)
+```
