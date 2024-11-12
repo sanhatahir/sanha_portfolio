@@ -7,7 +7,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
 
@@ -20,25 +21,201 @@ knitr::include_graphics("../../assets/images/profile_image.jpg")
 
 Hello there! Glad you could be here! 
 
-# Projects 
+I am a Data Scientist who just wrapped up her Masters in Data Science and Public Policy from McCourt School of Public Policy, Georgetown University.\n
+
+Now, I am working as a Data Scientist at the World Bank, contributing to the data processing at the Data360. \n
+
+
+# Skills: 
+
+The question you might ask is, _why should we hire you?_
+
+Well, here's all the treasure trove of skills I can bring to the table: 
+
+
+``` {r}
+
+library(plotly)
+
+# Example Data
+skills_data <- read.csv("../../assets/tables/skills.csv")
+
+# Add jitter to x and y values
+set.seed(123)  # For reproducibility
+skills_data$x_jitter <- (skills_data$x) + runif(nrow(skills_data), -0.2, 0.2)  # Adjust range as needed
+skills_data$y_jitter <- (skills_data$y/10) + runif(nrow(skills_data), -0.2, 0.2)  # Adjust range as needed
+skills_data$text_combined <- paste("Language:", skills_data$parent, "<br>", "Subskill:", skills_data$subskills)
+
+
+# Create the plot with a dropdown menu for tags
+fig <- plot_ly(
+  skills_data, 
+  x = ~x_jitter, 
+  y = ~y_jitter, 
+  text = ~text_combined, 
+  type = 'scatter', 
+  mode = 'markers',
+  marker = list(
+    size = ~expertise_score, 
+    opacity = 0.9,
+    # color = ~color,  # Map color from 'color' column
+    line = list(width = 0)
+  )
+)
+
+# Generate dropdown buttons for each unique tag
+unique_tags <- unique(skills_data$tags)
+buttons <- lapply(unique_tags, function(tag) {
+  list(
+    method = "restyle",
+    args = list("transforms[0].value", tag),  # Filter based on tag
+    label = tag
+  )
+})
+
+# Add an "All" button to show all tags
+#  <- c(list(list(method = "restyle", args = list("transforms[0].value", NULL), label = "All")), buttons)
+
+# Add dropdown menu with buttons to filter by tag
+fig <- fig %>%
+  layout(
+    title = 'Skills Visualization',
+    xaxis = list(
+      showgrid = FALSE,
+      zeroline = FALSE,
+      showticklabels = FALSE,
+      title = "",
+      range = c(min(skills_data$x) - 1, max(skills_data$x) + 1),  # Compress x-axis range
+      scaleanchor = "y"  # Link x-axis scale to y-axis for equal scaling
+    ),
+    yaxis = list(
+      showgrid = FALSE,
+      zeroline = FALSE,
+      showticklabels = FALSE,
+      title = "",
+      range = c(min(skills_data$y) - 1, max(skills_data$y) + 1)  # Compress y-axis range
+    ),
+    updatemenus = list(
+      list(
+        y = 0.3,  # Position dropdown
+        x = 1,
+        buttons = buttons
+      )
+    )
+  ) %>%
+  # Add a transform to allow filtering
+  add_trace(
+    transforms = list(
+      list(
+        type = "filter",
+        target = ~tags,
+        operation = "=",
+        value = unique_tags[1]  # Default to first tag
+      )
+    )
+  )
+
+fig
+```
+
+
+Most important of all is this however: 
+
+```{r, echo=FALSE}
+
+data <- data.frame(
+  label = "Skill: Enthusiasm <br> Subskill: Ready to learn and take on new challenges",
+  x = 1,
+  y = 1,
+  size = 300  # Adjust size to control bubble size
+)
+
+# Create the bubble chart
+fig <- plot_ly(
+  data,
+  x = ~x,
+  y = ~y,
+  text = ~label,
+  type = 'scatter',
+  mode = 'markers+text',
+  marker = list(
+    size = ~size,
+    opacity = 0.7,
+    color = 'orange'  # Set color for the bubble
+  )
+)
+
+# Customize layout if needed
+fig <- fig %>% layout(
+  title = "My Biggest Asset",
+  xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, 
+               title = "",
+               range = c(min(data$y) - 1, max(data$y) + 1)),
+  yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, title = "",
+               range = c(min(data$y) - 1, max(data$y) + 1))
+)
+
+fig
+
+```
+
 # Experience
+
+```{r, echo = FALSE}
+library(plotly)
+job_exp_data <- read.csv("../../assets/tables/job_exp.csv")
+job_exp_data$size <- 4.5 * (job_exp_data$duration_months + (12*job_exp_data$duration_years))
+job_exp_data$year_standard <- (job_exp_data$start_year - 2020)
+job_exp_data$text_combined <- paste("Title:", job_exp_data$title, "<br>", "Skills:", job_exp_data$skills)
+
+custom_colors <- c("#FFB3BA", "#FFDFBA", "#BAFFC9", "#BAE1FF", "#B8A0D3", "#F6A8A1") 
+
+fig <- plot_ly(job_exp_data, 
+               x = ~x, 
+               y = ~year_standard, 
+               text = ~text_combined, 
+               type = 'scatter', 
+               mode = 'markers',
+               marker = list(size = ~size, 
+                             opacity = 0.9,
+                             color = custom_colors,
+                             line = list(width = 0)))
+
+fig <- fig %>% layout(
+  title = 'My Journey In The Workforce',
+  subtitle = "Hover over the bubbles to learn more!",
+  xaxis = list(
+    showgrid = FALSE,
+    zeroline = FALSE,
+    showticklabels = FALSE,
+    title = "",
+    range = c(min(job_exp_data$x) - 1, max(job_exp_data$x) + 1),  # Compress x-axis range
+    scaleanchor = "y"  # Link x-axis scale to y-axis for equal scaling
+  ),
+  yaxis = list(
+    showgrid = FALSE,
+    zeroline = FALSE,
+    showticklabels = FALSE,
+    title = "",
+    range = c(min(job_exp_data$year_standard) - 1, max(job_exp_data$year_standard) + 1)  # Compress y-axis range
+  )
+)
+
+fig
+
+```
+
+As you can tell, I've been all over the place, in a variety of places! 
+Two things do stand out though;
+1. I always want to work in policy 
+2. My home is data and being face-to-face with others! 
+
 # Education
 
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
 summary(cars)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Projects 
