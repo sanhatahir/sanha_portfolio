@@ -1,0 +1,268 @@
+---
+title: "Sanha's Portfolio"
+author: "Sanha Tahir"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: "united"  # Optional, you can use any theme
+    code_folding: hide
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+
+<div class="section-intro">
+# Introduction
+
+Welcome to the introduction page. Use the Table of Contents to view other sections.
+
+
+<div style="display: flex; align-items: center;">
+  <img src="../../assets/images/profile_image.jpg" style="width:25%; margin-right: 20px;" alt="Hello there!">
+  <div>
+    Hello there! Glad you could be here! I am a Data Scientist who just wrapped up her Masters in Data Science and Public Policy from McCourt School of Public Policy, Georgetown University. Now, I am working as a Data Scientist at the World Bank, contributing to the data processing at the Data360.
+  </div>
+</div>
+</div>
+
+
+
+```{r, out.width="25%", echo=FALSE}
+# knitr::include_graphics("../../assets/images/profile_image.jpg")
+```
+
+
+
+# Skills: 
+
+<br>
+
+The question you might ask is, _why should we hire you?_
+
+Well, here's all the treasure trove of skills I can bring to the table: 
+
+
+``` {r, fig.height=3, fig.width=10}
+
+library(plotly)
+
+# Example Data
+skills_data <- read.csv("../../assets/tables/skills.csv")
+
+# Add jitter to x and y values
+set.seed(123)  # For reproducibility
+skills_data$x_jitter <- (skills_data$x) + runif(nrow(skills_data), -0.2, 0.2)  # Adjust range as needed
+skills_data$y_jitter <- (skills_data$y/10) + runif(nrow(skills_data), -0.2, 0.2)  # Adjust range as needed
+skills_data$text_combined <- paste("Language:", skills_data$parent, "<br>", "Subskill:", skills_data$subskills)
+
+
+# Create the plot with a dropdown menu for tags
+fig <- plot_ly(
+  skills_data, 
+  x = ~x_jitter, 
+  y = ~y_jitter, 
+  text = ~text_combined, 
+  type = 'scatter', 
+  mode = 'markers',
+  marker = list(
+    size = ~expertise_score, 
+    opacity = 0.9,
+    color = "#FFB3BA",  # Map color from 'color' column
+    line = list(width = 0.5)
+  )
+)
+
+# Generate dropdown buttons for each unique tag
+unique_tags <- unique(skills_data$tags)
+buttons <- lapply(unique_tags, function(tag) {
+  list(
+    method = "restyle",
+    args = list("transforms[0].value", tag),  # Filter based on tag
+    label = tag
+  )
+})
+
+# Add an "All" button to show all tags
+#  <- c(list(list(method = "restyle", args = list("transforms[0].value", NULL), label = "All")), buttons)
+
+# Add dropdown menu with buttons to filter by tag
+fig <- fig %>%
+  layout(
+    title = 'What do I bring to the table?',
+    xaxis = list(
+      showgrid = FALSE,
+      zeroline = FALSE,
+      showticklabels = FALSE,
+      title = "",
+      range = c(min(skills_data$x) - 1, max(skills_data$x) + 1),  # Compress x-axis range
+      scaleanchor = "y"  # Link x-axis scale to y-axis for equal scaling
+    ),
+    yaxis = list(
+      showgrid = FALSE,
+      zeroline = FALSE,
+      showticklabels = FALSE,
+      title = "",
+      range = c(min(skills_data$y) - 1, max(skills_data$y) + 1)  # Compress y-axis range
+    ),
+    updatemenus = list(
+      list(
+        y = 0.7,  # Position dropdown
+        x = 1,
+        buttons = buttons
+      )
+    )
+  ) 
+
+fig <- fig %>%
+  add_trace(
+    transforms = list(
+      list(
+        type = "filter",
+        target = ~tags,
+        operation = "=",
+        value = unique_tags[1]  # Default to first tag
+      )
+    ),
+    marker = list(
+      color = "#BAE1FF"  # Light pink color for this trace
+    )
+  )
+
+
+fig
+```
+
+
+Most important of all is this however: 
+
+```{r, echo=FALSE, fig.height=4, fig.width=4}
+
+data <- data.frame(
+  label = "Skill: Enthusiasm <br> Subskill: Ready to learn and take on new challenges",
+  x = 1,
+  y = 1,
+  size = 300  # Adjust size to control bubble size
+)
+
+# Create the bubble chart
+fig <- plot_ly(
+  data,
+  x = ~x,
+  y = ~y,
+  text = ~label,
+  type = 'scatter',
+  mode = 'markers',
+  marker = list(
+    size = ~size,
+    opacity = 0.7,
+    color = '#FFDFBA'  # Set color for the bubble
+  )
+)
+
+# Customize layout if needed
+fig <- fig %>% layout(
+  title = "My Biggest Asset",
+  xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, 
+               title = "",
+               range = c(min(data$y) - 1, max(data$y) + 1)),
+  yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, title = "",
+               range = c(min(data$y) - 1, max(data$y) + 1))
+)
+
+fig
+
+```
+
+
+
+# Experience
+
+```{r, echo = FALSE, fig.height=12, fig.width=6}
+library(plotly)
+job_exp_data <- read.csv("../../assets/tables/job_exp.csv")
+job_exp_data$size <- 9 * (job_exp_data$duration_months + (12*job_exp_data$duration_years))
+job_exp_data$year_standard <- (job_exp_data$start_year - 2020)
+job_exp_data$text_combined <- paste("Title:", job_exp_data$title, 
+                                    "<br>", "Skills:", job_exp_data$skills,
+                                    "<br>", "Overview:", job_exp_data$text)
+
+custom_colors <- c("#FFB3BA", "#FFDFBA", "#BAFFC9", "#BAE1FF", "#B8A0D3", "#F6A8A1") 
+
+# Initialize the plot with the grey line only
+fig <- plot_ly() %>%
+  layout(
+    shapes = list(
+      list(
+        type = "line",
+        x0 = 0, x1 = 0,
+        y0 = min(job_exp_data$year_standard),
+        y1 = max(job_exp_data$year_standard),
+        line = list(color = "grey", width = 1, dash = "dot")
+      )
+    )
+  )
+
+# Add bubble chart on top of the grey line
+fig <- fig %>%
+  add_trace(
+    data = job_exp_data,
+    x = ~x,
+    y = ~year_standard,
+    text = ~text_combined,
+    type = 'scatter',
+    mode = 'markers',
+    marker = list(size = ~size, 
+                  opacity = 1,
+                  color = custom_colors,
+                  line = list(width = 0))
+  )
+
+# Customize layout
+fig <- fig %>% layout(
+  title = 'My Journey In The Workforce',
+  subtitle = "Hover over the bubbles to learn more!",
+  xaxis = list(
+    showgrid = FALSE,
+    zeroline = FALSE,
+    showticklabels = FALSE,
+    title = "",
+    range = c(min(job_exp_data$x) - 1, max(job_exp_data$x) + 1),  # Compress x-axis range
+    scaleanchor = "y"  # Link x-axis scale to y-axis for equal scaling
+  ),
+  yaxis = list(
+    showgrid = FALSE,
+    zeroline = FALSE,
+    showticklabels = FALSE,
+    title = "",
+    range = c(min(job_exp_data$year_standard) - 1, max(job_exp_data$year_standard) + 1)  # Compress y-axis range
+  )
+)
+
+fig
+
+```
+
+As you can tell, I've been all over the place, in a variety of places! 
+Two things do stand out though;
+1. I always want to work in policy 
+2. My home is data and being face-to-face with others! 
+
+
+
+# Education
+
+Content for the second section.
+
+
+
+# Projects
+
+Content for the second section.
+
+

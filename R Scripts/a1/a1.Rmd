@@ -1,5 +1,6 @@
 ---
-title: "Something"
+title: "Sanha's Portfolio"
+author: "Sanha Tahir"
 output: 
   html_document:
     toc: true
@@ -15,25 +16,37 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 # Intro 
 
 
+<div style="display: flex; align-items: center;">
+  <img src="../../assets/images/profile_image.jpg" style="width:25%; margin-right: 20px;" alt="Hello there!">
+  <div style="font-family: Arial, sans-serif; font-size: 100px;">
+    
+    Hello there! Glad you could be here! 
+    
+    I am a Data Scientist who just wrapped up her Masters in Data Science and Public Policy from McCourt School of Public Policy, Georgetown University.
+    
+    Now, I am working as a Data Scientist at the World Bank, contributing to the data processing at the Data360.
+  </div>
+</div>
+
+
+
+
 ```{r, out.width="25%", echo=FALSE}
-knitr::include_graphics("../../assets/images/profile_image.jpg")
+# knitr::include_graphics("../../assets/images/profile_image.jpg")
 ```
 
-Hello there! Glad you could be here! 
-
-I am a Data Scientist who just wrapped up her Masters in Data Science and Public Policy from McCourt School of Public Policy, Georgetown University.\n
-
-Now, I am working as a Data Scientist at the World Bank, contributing to the data processing at the Data360. \n
 
 
 # Skills: 
+
+<br>
 
 The question you might ask is, _why should we hire you?_
 
 Well, here's all the treasure trove of skills I can bring to the table: 
 
 
-``` {r}
+``` {r, fig.height=3, fig.width=10}
 
 library(plotly)
 
@@ -58,8 +71,8 @@ fig <- plot_ly(
   marker = list(
     size = ~expertise_score, 
     opacity = 0.9,
-    # color = ~color,  # Map color from 'color' column
-    line = list(width = 0)
+    color = "#FFB3BA",  # Map color from 'color' column
+    line = list(width = 0.5)
   )
 )
 
@@ -79,7 +92,14 @@ buttons <- lapply(unique_tags, function(tag) {
 # Add dropdown menu with buttons to filter by tag
 fig <- fig %>%
   layout(
-    title = 'Skills Visualization',
+    title = list(
+      text = 'What do I bring to the table?',
+      x = 0.5,  # Center the title
+      xanchor = "center",
+      yanchor = "top",
+      font = list(size = 20),
+      pad = list(t = 1)  # Reduce top padding around title
+    ),
     xaxis = list(
       showgrid = FALSE,
       zeroline = FALSE,
@@ -97,13 +117,14 @@ fig <- fig %>%
     ),
     updatemenus = list(
       list(
-        y = 0.3,  # Position dropdown
+        y = 0.7,  # Position dropdown
         x = 1,
         buttons = buttons
       )
     )
-  ) %>%
-  # Add a transform to allow filtering
+  ) 
+
+fig <- fig %>%
   add_trace(
     transforms = list(
       list(
@@ -112,8 +133,12 @@ fig <- fig %>%
         operation = "=",
         value = unique_tags[1]  # Default to first tag
       )
+    ),
+    marker = list(
+      color = "#BAE1FF"  # Light pink color for this trace
     )
   )
+
 
 fig
 ```
@@ -121,7 +146,7 @@ fig
 
 Most important of all is this however: 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=4, fig.width=4}
 
 data <- data.frame(
   label = "Skill: Enthusiasm <br> Subskill: Ready to learn and take on new challenges",
@@ -137,11 +162,11 @@ fig <- plot_ly(
   y = ~y,
   text = ~label,
   type = 'scatter',
-  mode = 'markers+text',
+  mode = 'markers',
   marker = list(
     size = ~size,
     opacity = 0.7,
-    color = 'orange'  # Set color for the bubble
+    color = '#FFDFBA'  # Set color for the bubble
   )
 )
 
@@ -161,29 +186,57 @@ fig
 
 # Experience
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.height=12, fig.width=6}
 library(plotly)
 job_exp_data <- read.csv("../../assets/tables/job_exp.csv")
-job_exp_data$size <- 4.5 * (job_exp_data$duration_months + (12*job_exp_data$duration_years))
+job_exp_data$size <- 9 * (job_exp_data$duration_months + (12*job_exp_data$duration_years))
 job_exp_data$year_standard <- (job_exp_data$start_year - 2020)
-job_exp_data$text_combined <- paste("Title:", job_exp_data$title, "<br>", "Skills:", job_exp_data$skills)
+job_exp_data$text_combined <- paste("Title:", job_exp_data$title, 
+                                    "<br>", "Skills:", job_exp_data$skills,
+                                    "<br>", "Overview:", job_exp_data$text)
 
 custom_colors <- c("#FFB3BA", "#FFDFBA", "#BAFFC9", "#BAE1FF", "#B8A0D3", "#F6A8A1") 
 
-fig <- plot_ly(job_exp_data, 
-               x = ~x, 
-               y = ~year_standard, 
-               text = ~text_combined, 
-               type = 'scatter', 
-               mode = 'markers',
-               marker = list(size = ~size, 
-                             opacity = 0.9,
-                             color = custom_colors,
-                             line = list(width = 0)))
+# Initialize the plot with the grey line only
+fig <- plot_ly() %>%
+  layout(
+    shapes = list(
+      list(
+        type = "line",
+        x0 = 0, x1 = 0,
+        y0 = min(job_exp_data$year_standard),
+        y1 = max(job_exp_data$year_standard),
+        line = list(color = "grey", width = 1, dash = "dot")
+      )
+    )
+  )
 
+# Add bubble chart on top of the grey line
+fig <- fig %>%
+  add_trace(
+    data = job_exp_data,
+    x = ~x,
+    y = ~year_standard,
+    text = ~text_combined,
+    type = 'scatter',
+    mode = 'markers',
+    marker = list(size = ~size, 
+                  opacity = 1,
+                  color = custom_colors,
+                  line = list(width = 0))
+  )
+
+# Customize layout
 fig <- fig %>% layout(
-  title = 'My Journey In The Workforce',
-  subtitle = "Hover over the bubbles to learn more!",
+  
+    title = list(
+      text = 'My Journey In The Work Force',
+      x = 0.5,  # Center the title
+      xanchor = "center",
+      yanchor = "top",
+      font = list(size = 20),
+      pad = list(t = 1)  # Reduce top padding around title
+    ),
   xaxis = list(
     showgrid = FALSE,
     zeroline = FALSE,
@@ -213,9 +266,30 @@ Two things do stand out though;
 # Education
 
 
-```{r cars}
-summary(cars)
-```
-
 
 # Projects 
+
+
+
+## Investigating the Lobbying Landscape on Capitol Hill 
+
+<left>
+<img src="../../assets/images/lobbying_poster.jpg" height="150px" style="border: 2px solid black;"/>
+</left>
+
+•	Crafted an engaging game for fellow students with several interesting data visualizations as hints (R/Shiny).
+
+* [Game](https://sanhatahir.shinyapps.io/Guess_The_Firm/)
+* [Viz](https://sanhatahir.shinyapps.io/Final_Project/)
+
+
+
+## [Understanding Climate Denialism in Reddit on AWS:](https://gu-ppol.github.io/spring-2024-reddit-bigdata-project-team-03/w1_exec.html) 
+
+<left>
+<img src="../../assets/images/climate_denialism_poster.jpg" height="150px" style="border: 2px solid black;"/>
+</left>
+
+•	Analyzed climate-related misinformation on Reddit across subreddits on AWS based on select policy-related questions
+•	Conducted network analysis to identify key contributors and super-spreaders of climate denial claims.
+•	Created visualizations to showcase key metrics and effectively communicate technical results to non-technical stakeholders
