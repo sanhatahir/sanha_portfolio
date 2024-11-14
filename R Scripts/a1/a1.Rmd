@@ -20,33 +20,35 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
   <img src="../../assets/images/profile_image.jpg" style="width:25%; margin-right: 20px;" alt="Hello there!">
   <div style="font-family: Arial, sans-serif; font-size: 100px;">
     
-    Hello there! Glad you could be here! 
+    I’m a freshly-minted Data Scientist, straight out of my Master’s in Data Science for Public Policy from Georgetown’s McCourt School.
     
-    I am a Data Scientist who just wrapped up her Masters in Data Science and Public Policy from McCourt School of Public Policy, Georgetown University.
+    These days, you’ll find me at the World Bank, working my data magic for Data360, where I help turn curate data that is used by millions across the globe. 
     
-    Now, I am working as a Data Scientist at the World Bank, contributing to the data processing at the Data360.
+    Read on to learn more about me! 
+    
   </div>
 </div>
 
-
-
-
 <br>
 <br>
 
+Psst...let's connect on other platforms! <br>
+* [LinkdIn](https://www.linkedin.com/in/sanha-tahir/) <br>
+* [Resume](https://drive.google.com/file/d/17ShM02-q6ppX-REgj6Ba7aSo9Hy3u_cG/view?usp=sharing) <br>
+
+<br>
 
 <left>
-<img src="../../assets/images/page_break.jpg" height="75px" width="350%" style="border: 2px solid black;"/>
+<img src="../../assets/images/page_break.jpg" height="25px" width="350%" style="border: 2px solid black;"/>
 </left>
 
-# Skills: 
+# Skills
 
 <br>
 
 The question you might ask is, _why should we hire you?_
 
 Well, here's all the treasure trove of skills I can bring to the table: 
-
 
 ``` {r, fig.height=3, fig.width=10}
 
@@ -145,7 +147,6 @@ fig <- fig %>%
 fig
 ```
 
-
 Most important of all is this however: 
 
 ```{r, echo=FALSE, fig.height=4, fig.width=4}
@@ -186,80 +187,16 @@ fig
 
 ```
 
+There will always be some knowledge and skills that I am not well-versed in, situations where I am unaware of proceedings...but this does not deter me. In fact, I am driven to learn new things and push myself out of my comfort zone; an invaluable asset for anyone I work with! 
+<br>
+
+
 <left>
-<img src="../../assets/images/page_break.jpg" height="75px" width="350%" style="border: 2px solid black;"/>
+<img src="../../assets/images/page_break.jpg" height="25px" width="350%" style="border: 2px solid black;"/>
 </left>
 
 # Experience
 
-## Option 2:
-```{r, echo = FALSE, fig.height=12, fig.width=6}
-library(plotly)
-job_exp_data <- read.csv("../../assets/tables/job_exp.csv")
-job_exp_data$size <- 9 * (job_exp_data$duration_months + (12*job_exp_data$duration_years))
-job_exp_data$year_standard <- (job_exp_data$start_year - 2020)
-job_exp_data$text_combined <- paste("Title:", job_exp_data$title, 
-                                    "<br>", "Skills:", job_exp_data$skills,
-                                    "<br>", "Overview:", job_exp_data$text)
-
-custom_colors <- c("#FFB3BA", "#FFDFBA", "#BAFFC9", "#BAE1FF", "#B8A0D3", "#F6A8A1") 
-
-# Initialize the plot with the grey line only
-fig <- plot_ly() %>%
-  layout(
-    shapes = list(
-      list(
-        type = "line",
-        x0 = 0, x1 = 0,
-        y0 = min(job_exp_data$year_standard),
-        y1 = max(job_exp_data$year_standard),
-        line = list(color = "grey", width = 1, dash = "dot")
-      )
-    )
-  )
-
-# Add bubble chart on top of the grey line
-fig <- fig %>%
-  add_trace(
-    data = job_exp_data,
-    x = ~x,
-    y = ~year_standard,
-    text = ~text_combined,
-    type = 'scatter',
-    mode = 'markers',
-    marker = list(size = ~size, 
-                  opacity = 1,
-                  color = custom_colors,
-                  line = list(width = 0))
-  )
-
-# Customize layout
-fig <- fig %>% layout(
-  title = 'My Journey In The Workforce',
-  subtitle = "Hover over the bubbles to learn more!",
-  xaxis = list(
-    showgrid = FALSE,
-    zeroline = FALSE,
-    showticklabels = FALSE,
-    title = "",
-    range = c(min(job_exp_data$x) - 1, max(job_exp_data$x) + 1),  # Compress x-axis range
-    scaleanchor = "y"  # Link x-axis scale to y-axis for equal scaling
-  ),
-  yaxis = list(
-    showgrid = FALSE,
-    zeroline = FALSE,
-    showticklabels = FALSE,
-    title = "",
-    range = c(min(job_exp_data$year_standard) - 1, max(job_exp_data$year_standard) + 1)  # Compress y-axis range
-  )
-)
-
-fig
-
-```
-
-
-## Option 1: 
 ```{r, echo = FALSE, fig.height=6, fig.width=10}
 library(plotly)
 job_exp_data <- read.csv("../../assets/tables/job_exp.csv")
@@ -332,26 +269,18 @@ fig
 
 ```
 
-As you can tell, I've been all over the place, in a variety of places! 
-Two things do stand out though;
-1. I always want to work in policy 
-2. My home is data and being face-to-face with others! 
+Throughout my career, I’ve had the opportunity to work across diverse roles and environments, each bringing new perspectives and challenges. Yet, two themes have remained constant: <br>
 
+1. A Commitment to Policy Impact – I’m deeply driven by the desire to create positive change through data-driven policy. Whether I’m developing new data insights or working hands-on with stakeholders, my ultimate goal is to contribute to meaningful and informed policy decisions. <br>
 
+2. A Passion for Data and Collaboration – Data is my foundation, but connecting with people is what brings my work to life. I thrive in roles where I can not only analyze data but also engage directly with teams and partners to communicate insights, build solutions, and foster shared understanding.
+
+<br>
 <left>
-<img src="../../assets/images/page_break.jpg" height="75px" width="350%" style="border: 2px solid black;"/>
+<img src="../../assets/images/page_break.jpg" height="25px" width="350%" style="border: 2px solid black;"/>
 </left>
 
 # Education
-
-## Option 1: 
-
-<left>
-<img src="../../assets/images/combined_edu.jpg"/>
-</left>
-
-## Option 2: 
-
 
 <div style="display: flex; align-items: center;">
   <img src="../../assets/images/gu_logo.jpg" style="width:250px; margin-right: 20px;" alt="Hello there!">
@@ -393,36 +322,84 @@ Two things do stand out though;
 
 
 <left>
-<img src="../../assets/images/page_break.jpg" height="75px" width="350%" style="border: 2px solid black;"/>
+<img src="../../assets/images/page_break.jpg" height="25px" width="350%" style="border: 2px solid black;"/>
 </left>
+
 
 # Projects 
 
-I've obviously had a few projects under my belt.
+With a variety of projects under my belt, I’ve gained valuable experience and insights across different domains. <br>
 
-Let's take a look...
+Let’s dive in and explore some highlights...
+
+## [Investigating the Lobbying Landscape on Capitol Hill](https://drive.google.com/file/d/1Mm1LeqtV8ft6rHGbxKcOMCKu-SOyxmjX/view?usp=sharing)
 
 
 <left>
-<img src="../../assets/images/page_break.jpg" height="75px" width="350%" style="border: 2px solid black;"/>
+<img src="../../assets/images/lobbying_poster.jpg" height="150px" width="150%" style="border: 2px solid black;"/>
 </left>
 
-## Investigating the Lobbying Landscape on Capitol Hill 
+I became interested in how large companies play a role in the policies that govern our every daily lives. <br> 
+The questions I was curious about were: <br> 
+1. To what extent do these companies influence the bills that pass through Congress?  <br> 
+2. Who are the large players in this context, and which issues are most important to them?  <br>  
+3. Are there instances where these companies work together on several bills, related to a certain field?  <br> 
+4. Are there other patterns? For example, are some companies more prone to providing support to a certain party to propel their interests? <br> 
 
-•	Crafted an engaging game for fellow students with several interesting data visualizations as hints (R/Shiny).
+To answer these, I scraped data provided by [OpenSecrets.org](https://www.opensecrets.org/) to get information about Congressional bills and their sponsors. I then merged the data with other details about the bill, and finally performed some detailed data analysis. <br>
+
+* [Write-up with detailed Analysis](https://drive.google.com/file/d/1Mm1LeqtV8ft6rHGbxKcOMCKu-SOyxmjX/view?usp=sharing)
+* [Github](https://github.com/sanhatahir/lobbying_congress)
+
+
+Skills used:  <br> 
+* Web Scraping <br> 
+* Data manipulation <br> 
+* PCA & Cluster Analysis using K-Means <br> 
+* Network Analysis using networkx <br> 
+
+I was also deeply interested in the role big technology firms play in lobbying. Are there certain policy areas where they are more active, e.g. internet regulation? Do they collaborate on a large number of bills, or not? For that purpose, I made a specific dashboard that highlights the results here:   <br>
+
+* [Viz](https://sanhatahir.shinyapps.io/Final_Project/) <br>
+
+Lastly, I wanted to present my findings in an interesting and engaging way. What better way to do that, than in a game?! <br>
+In this, I made a Shiny application where the user is provided 'hints' in the form of data visualizations, and they have to guess which firm is being talked about. <br>
+The idea was to get users to think about the many different ways these firms are affecting the policies that govern our lives.
 
 * [Game](https://sanhatahir.shinyapps.io/Guess_The_Firm/)
-* [Viz](https://sanhatahir.shinyapps.io/Final_Project/)
-* [Github]()
+
+Skills used:  <br> 
+* Shiny <br> 
+* Plotly <br>
+
+
+## Deforestation 
 
 <left>
 <img src="../../assets/images/deforest_poster.jpg" height="150px" width="150%" style="border: 2px solid black;"/>
 </left>
 
-## Deforestation 
+Carbon emissions driving global warming have led to significant changes worldwide, including accelerated deforestation in Bolivia. <br>
 
+To quantify this, we analyzed satellite images from the past seven years, applying image segmentation to pinpoint deforested areas in detail. Using a U-Net convolutional encoder-decoder model, originally developed for medical imaging but highly effective in forestry segmentation (achieving ~94% accuracy), we created binary forest/non-forest masks for high-resolution satellite images from Planet and estimated deforestation rates. <br> 
+
+
+<left>
+<img src="../../assets/images/deforestration_images.jpg" height="25%" width="25%" style="border: 2px solid black;"/>
+</left>
+
+The U-Net architecture enabled feature extraction and mask creation by compressing spatial information and then reconstructing detailed classifications. After masking test data images, we calculated the forested area percentage for each region, finding the most significant change around quad ‘680-930’ (16.21° S, 63.37° W). Future work could explore more nuanced classifications beyond binary segmentation.
+
+
+Final Outputs: 
 * [Slides](https://docs.google.com/presentation/d/1ZzxnB3HvzOuNMEJ3FB03e7kHFoxAgqlJ/edit?usp=sharing&ouid=117544413816913004630&rtpof=true&sd=true)
-* [Github]()
+* [Github](https://github.com/sanhatahir/dsan6600_group_project)
+
+
+Skills used:  <br> 
+* tensorflow <br>
+* keras <br>
+* matplotlib <br>
 
 ## [Understanding Climate Denialism in Reddit on AWS:](https://gu-ppol.github.io/spring-2024-reddit-bigdata-project-team-03/w1_exec.html) 
 
@@ -430,7 +407,26 @@ Let's take a look...
 <img src="../../assets/images/climate_denialism_poster.jpg" height="150px" style="border: 2px solid black;"/>
 </left>
 
-•	Analyzed climate-related misinformation on Reddit across subreddits on AWS based on select policy-related questions
-•	Conducted network analysis to identify key contributors and super-spreaders of climate denial claims.
-•	Created visualizations to showcase key metrics and effectively communicate technical results to non-technical stakeholders
-* [Github]()
+As part of a group project, I conducted an analysis of climate-related misinformation on Reddit, focusing on various subreddits to address specific policy-related questions, using AWS as a computational platform. <br>
+
+Our approach involved comparing techniques like data oversampling and undersampling to address class imbalances, along with Logistic Regression and XGBoost for the classification of climate denialism. <br>
+
+Leveraging PyTorch and the Simple Transformers library, we loaded a pre-trained RoBERTa model to classify climate denial claims effectively. <br> 
+
+We created visualizations to highlight key metrics, ensuring clear communication of technical findings to non-technical stakeholders. Additionally, we conducted a network analysis to identify key contributors and super-spreaders of climate denial claims, providing insights into the patterns of misinformation spread.
+
+Final Results: 
+
+* [Github](https://github.com/gu-ppol/spring-2024-reddit-bigdata-project-team-03) <br>
+* [Website](https://gu-ppol.github.io/spring-2024-reddit-bigdata-project-team-03/w1_exec.html) <br>
+
+Skills used:  <br> 
+* AWS S3 Buckets <br>
+* Amazon ECS & Docker <br>
+* PySpark <br>
+* Pytorch <br>
+* R Markdown <br> 
+* Networkx <br>
+* ggplot <br>
+* matplotlib 
+
