@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# Local browser previews
+.preview-browser*/
+preview-*.png
