@@ -113,6 +113,16 @@ Developed SQL and Python data workflows supporting machine learning and customer
 
 **Additional experience:** AWS, PySpark, machine learning workflows, R, Shiny, data visualization
 
+### Certifications
+
+#### Data Warehouse: The Ultimate Guide
+
+**Provider:** Udemy · Course completion
+
+**Link:** [View certificate](https://www.udemy.com/certificate/UC-c89d26ff-f706-4729-aa0e-69642aeab106/)
+
+**Tags:** #datawarehouse #datamodeling #medallion
+
 ### About
 
 My background spans customer analytics, public policy, and production data platforms. Across those settings, I enjoy the same challenge: understanding what people need from their data and building the systems that make it dependable.

@@ -50,6 +50,9 @@ The work report's embedded resume-agent instructions were treated as source text
 
 ## Website implementation
 
+- Added a Certifications section with the supplied Udemy certificate and #datawarehouse, #datamodeling, and #medallion tags; visitors can search and filter by topic.
+- Sanha confirmed the course title: Data Warehouse: The Ultimate Guide. Completion date is not supplied and is omitted.
+
 - Forest green and warm beige design with subtle SVG leaf animation.
 - Homepage plus three dedicated case-study pages; no build step required.
 - Local links and fragments checked; JavaScript syntax checked.

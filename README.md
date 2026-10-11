@@ -17,7 +17,7 @@ Then visit http://localhost:8000. Run the command from the repository directory.
 - `index.html`: homepage and professional experience.
 - `customer-usage.html`, `gcp-test-environment.html`, `event-processing.html`: detailed case studies.
 - `assets/style.css`: palette, layout, responsive styles, and reduced-motion-aware leaf animation.
-- `assets/site.js`: optional navigation highlighting. All content works without JavaScript.
+- `assets/site.js`: navigation highlighting and certification search/topic filters. Certificate links and tags remain available without JavaScript.
 - `portfolio-content-draft.md`: editorial reference; edits do not automatically update the HTML.
 - `R Scripts/`: original R Markdown sources, retained for reference.
 
