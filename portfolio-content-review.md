@@ -50,6 +50,8 @@ The work report's embedded resume-agent instructions were treated as source text
 
 ## Website implementation
 
+- Added persistent vertical navigation on desktop and a compact expandable Navigate menu on smaller screens, across the homepage and case studies. Homepage links include Overview, How I can help, Selected work, Experience, Toolkit, Certifications, About, and Contact, with the current section highlighted while scrolling.
+
 - Added a Certifications section with the supplied Udemy certificate and #datawarehouse, #datamodeling, and #medallion tags; visitors can search and filter by topic.
 - Sanha confirmed the course title: Data Warehouse: The Ultimate Guide. Completion date is not supplied and is omitted.
 

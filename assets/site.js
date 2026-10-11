@@ -1,16 +1,49 @@
-// Keep navigation orientation visible without making content depend on JavaScript.
-const links = [...document.querySelectorAll('nav a[href^="index.html#"]')];
-if ('IntersectionObserver' in window) {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) links.forEach(link => {
-        const active = link.hash === '#' + entry.target.id;
-        if (active) link.setAttribute('aria-current', 'location');
-        else link.removeAttribute('aria-current');
-      });
+// Keep the section menu in sync with the reader's position.
+const sectionMenu = document.querySelector('.section-menu');
+const desktopNavigation = window.matchMedia('(min-width: 1100px)');
+if (sectionMenu) {
+  const syncMenu = () => { sectionMenu.open = desktopNavigation.matches; };
+  syncMenu();
+  desktopNavigation.addEventListener('change', syncMenu);
+}
+const sectionLinks = [...document.querySelectorAll('.section-nav a')];
+const sections = sectionLinks.map(link => document.getElementById(link.hash.slice(1))).filter(Boolean);
+if (sections.length) {
+  let scheduled = false;
+  const updateSection = () => {
+    scheduled = false;
+    let current = sections[0];
+    sections.forEach(section => {
+      if (section.getBoundingClientRect().top <= 150) current = section;
     });
-  }, { rootMargin: '-15% 0px -55% 0px' });
-  document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+      current = sections[sections.length - 1];
+    }
+    sectionLinks.forEach(link => {
+      if (link.hash === '#' + current.id) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  const scheduleUpdate = () => {
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(updateSection);
+    }
+  };
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  updateSection();
+}
+sectionLinks.forEach(link => link.addEventListener('click', () => {
+  if (!desktopNavigation.matches) sectionMenu.removeAttribute('open');
+}));
+if (sectionMenu) {
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && sectionMenu.open && !desktopNavigation.matches) {
+      sectionMenu.removeAttribute('open');
+      sectionMenu.querySelector('summary').focus();
+    }
+  });
 }
 
 // Enhance the certificate list while preserving links and tags without JavaScript.

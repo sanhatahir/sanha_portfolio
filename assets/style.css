@@ -23,3 +23,18 @@
 [hidden]{display:none!important}
 @media(max-width:720px){.header{flex-wrap:wrap;gap:18px}.header nav{flex-wrap:wrap;justify-content:flex-end;flex:1}.certification-card{padding:24px}}
 @media(max-width:450px){.header nav{column-gap:13px;row-gap:10px}.header .brand{align-self:flex-start}}
+/* Persistent vertical navigation, with a compact disclosure on smaller screens. */
+.section-menu{position:fixed;top:100px;right:6%;z-index:20;width:min(280px,88vw);font-size:13px}
+.section-menu summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:24px;background:var(--cream);padding:10px 18px;width:max-content;margin-left:auto;box-shadow:0 4px 16px #183e3210}
+.section-menu summary::-webkit-details-marker{display:none}
+.section-menu summary span{margin-left:14px}
+.section-menu summary:focus-visible{outline:3px solid #9d6e2f;outline-offset:4px}
+.section-menu .section-nav{flex-direction:column;align-items:stretch;gap:4px;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:10px;max-height:calc(100dvh - 175px);overflow-y:auto;box-shadow:0 8px 24px #183e3214}
+.section-menu:not([open]) .section-nav{display:none}
+.section-nav .eyebrow{font-size:8px;margin:0 0 12px}
+.section-nav a{display:block;font-size:13px;padding:8px 12px;border-radius:5px;border-left:3px solid transparent;line-height:1.4}
+.section-nav a:hover{background:var(--sage);color:var(--green)}
+.section-nav a[aria-current="location"]{border-left-color:var(--green);background:var(--sage);color:var(--green);font-weight:600}
+@media(min-width:1100px){body{padding-left:190px}.section-menu{left:0;right:auto;top:0;bottom:0;width:190px;padding:110px 15px 25px;border-right:1px solid var(--line);background:var(--cream);overflow-y:auto}.section-menu summary{display:none}.section-menu .section-nav,.section-menu:not([open]) .section-nav{display:flex;border:0;border-radius:0;margin:0;padding:0;box-shadow:none;max-height:none;overflow:visible}.section-nav a{font-size:12px}.hero{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.hero-art{transform:scale(.8);transform-origin:left center}}
+@media(min-width:1440px){.hero-art{transform:none}}
+@media(max-width:450px){.section-menu{top:85px}.section-menu .section-nav{max-height:calc(100dvh - 155px)}}
