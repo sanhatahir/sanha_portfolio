@@ -41,3 +41,5 @@
 
 /* Portfolio assistant entry point. */
 .hero-actions{flex-wrap:wrap;gap:16px 24px}.button.chat-link{background:transparent;color:var(--green);border:1px solid #aeb8a4}.button.chat-link:hover{background:var(--sage)}
+
+.section-nav a.assistant-nav{background:var(--sage);color:var(--green);font-weight:600;border:1px solid #aeb8a4;margin:6px 0}.section-nav a.assistant-nav:hover{background:#d9e2cf}
