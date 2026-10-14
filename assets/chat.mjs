@@ -36,6 +36,18 @@ export function createPortfolioApi(baseUrl, fetcher = fetch, tokenFactory = () =
   };
 }
 
+export function createWarmup(callApi) {
+  let pending;
+  return () => {
+    if (!pending) {
+      pending = callApi('/health', {method: 'GET', cache: 'no-store'})
+        .then(data => Boolean(data && data.status === 'ok'))
+        .catch(() => false);
+    }
+    return pending;
+  };
+}
+
 if (typeof document !== 'undefined') {
   const baseUrl = document.documentElement.dataset.chatApi;
   const callApi = baseUrl ? createPortfolioApi(baseUrl) : api;
@@ -47,6 +59,8 @@ if (typeof document !== 'undefined') {
   const status = document.getElementById('status');
   let conversationId = null;
   let busy = false;
+  let ready = false;
+  const warmup = createWarmup(callApi);
   const starters = ['What makes Sanha a great data engineer?', 'Tell me about her projects.', 'What is Sanha like outside work?'];
 
   function addMessage(role, text) {
@@ -95,9 +109,11 @@ if (typeof document !== 'undefined') {
     setBusy(true);
     input.value = '';
     let userMessage = addMessage('user', question);
-    status.textContent = 'Thinking…';
+    status.textContent = ready ? 'Thinking…' : 'Getting the assistant ready… Your question is queued.';
     const wakeTimer = setTimeout(() => { status.textContent = 'Still working on it. The service may take a little longer to wake up.'; }, 8000);
     try {
+      ready = await warmup();
+      status.textContent = 'Thinking…';
       const payload = { message: question };
       if (conversationId) payload.conversation_id = conversationId;
       let data;
@@ -113,6 +129,7 @@ if (typeof document !== 'undefined') {
         } else { throw error; }
       }
       data = validateAnswer(data);
+      ready = true;
       conversationId = data.conversation_id;
       addMessage('assistant', data.reply);
       setSuggestions(data.suggested_questions);
@@ -148,4 +165,9 @@ if (typeof document !== 'undefined') {
     finally { setBusy(false); input.focus(); }
   });
   welcome();
+  status.textContent = 'Getting the assistant ready… You can type your question while it wakes up.';
+  warmup().then(isReady => {
+    ready = isReady;
+    if (!busy) status.textContent = isReady ? 'Ready when you are.' : 'The assistant is taking a little longer to wake up. You can still send a question.';
+  });
 }
