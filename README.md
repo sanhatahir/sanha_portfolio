@@ -49,3 +49,9 @@ There is currently no custom CI workflow for JavaScript syntax, local links, or 
 - Preview the pages in a browser and check responsive layout and interactions.
 
 Changes to the editorial Markdown files do not automatically update the website. Edit the corresponding HTML files to change published content.
+
+## Portfolio assistant
+
+The homepage contains an inline chat panel at `#assistant`. It calls the separate Render backend over HTTPS. Visitor session tokens are generated with browser cryptographic randomness, held only in page memory, and sent in the Authorization header; no API keys are present in frontend code. Conversation memory and follow-ups work without third-party cookies. Reloading the page starts a fresh session. New chat deletes the current server conversation. Responses are rendered as text.
+
+The backend allows requests from the exact GitHub Pages origin. Local live-chat previews also require that local origin in the backend's ALLOWED_ORIGINS; regular portfolio content can be previewed without that configuration. The free backend can take about a minute to wake after inactivity.

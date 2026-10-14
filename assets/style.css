@@ -38,3 +38,6 @@
 @media(min-width:1100px){body{padding-left:190px}.section-menu{left:0;right:auto;top:0;bottom:0;width:190px;padding:110px 15px 25px;border-right:1px solid var(--line);background:var(--cream);overflow-y:auto}.section-menu summary{display:none}.section-menu .section-nav,.section-menu:not([open]) .section-nav{display:flex;border:0;border-radius:0;margin:0;padding:0;box-shadow:none;max-height:none;overflow:visible}.section-nav a{font-size:12px}.hero{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.hero-art{transform:scale(.8);transform-origin:left center}}
 @media(min-width:1440px){.hero-art{transform:none}}
 @media(max-width:450px){.section-menu{top:85px}.section-menu .section-nav{max-height:calc(100dvh - 155px)}}
+
+/* Portfolio assistant entry point. */
+.hero-actions{flex-wrap:wrap;gap:16px 24px}.button.chat-link{background:transparent;color:var(--green);border:1px solid #aeb8a4}.button.chat-link:hover{background:var(--sage)}
