@@ -9,3 +9,6 @@
 @media(max-width:850px){.hero{grid-template-columns:1fr;gap:28px}.hero-chat{max-width:650px;margin:0 auto}.hero-chat .messages{height:290px}.hero-chat .portfolio-chat{margin-top:0}.hero-foot{padding-top:25px}}
 
 .hero-chat{padding:0}.hero-chat .portfolio-chat{background:#fffdf8}.hero-chat .message{font-size:15px}.hero-chat .suggestions button{font-size:12px}.hero-chat .chat-header strong{font-size:14px}
+
+/* Floating leaves remain decorative and sit behind the chat. */
+.chat-leaves{position:absolute;inset:0;z-index:1;pointer-events:none}.chat-leaves .leaf{z-index:1}.chat-leaves .leaf-one{width:65px;right:-24px;top:-15px}.chat-leaves .leaf-two{width:50px;left:-26px;bottom:65px}.chat-leaves .leaf-three{width:45px;right:38px;bottom:-16px}
