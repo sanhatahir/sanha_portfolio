@@ -57,3 +57,5 @@ The homepage hero contains an inline chat panel at `#assistant`, replacing the f
 The backend allows requests from the exact GitHub Pages origin. Local live-chat previews also require that local origin in the backend's ALLOWED_ORIGINS; regular portfolio content can be previewed without that configuration. The free backend can take about a minute to wake after inactivity.
 
 The chat sends a single health request when the page opens to wake the backend before visitors ask a question. Readiness messaging explains the wait. This makes no paid LLM call and does not continuously ping the service.
+
+Question analytics are retained separately in the backend for up to 90 days, as disclosed in the chat panel. New chat clears conversational history but does not delete these question records. Avoid entering sensitive information.
