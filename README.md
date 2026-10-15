@@ -59,3 +59,5 @@ The backend allows requests from the exact GitHub Pages origin. Local live-chat 
 The chat sends a single health request when the page opens to wake the backend before visitors ask a question. Readiness messaging explains the wait. This makes no paid LLM call and does not continuously ping the service.
 
 Question analytics are retained separately in the backend for up to 90 days, as disclosed in the chat panel. New chat clears conversational history but does not delete these question records. Avoid entering sensitive information.
+
+Analytics include the AI answer and whether a question came from a suggestion button or was typed/edited in the composer. Input source is client-reported metadata, not identity verification.

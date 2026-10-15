@@ -85,7 +85,7 @@ if (typeof document !== 'undefined') {
       button.type = 'button';
       button.textContent = question;
       button.disabled = busy;
-      button.addEventListener('click', () => ask(question));
+      button.addEventListener('click', () => ask(question, 'suggested'));
       suggestions.append(button);
     }
   }
@@ -102,7 +102,7 @@ if (typeof document !== 'undefined') {
     addMessage('assistant', "Hi! I'm Sanha's portfolio assistant. I'd love to help you explore her engineering work, her approach to solving problems, or a little about her life outside work. What are you curious about?");
     setSuggestions(starters);
   }
-  async function ask(question) {
+  async function ask(question, inputSource = 'typed') {
     question = question.trim();
     if (busy || !question) return;
     if (question.length > 4000) { status.textContent = 'Please keep your question under 4,000 characters.'; return; }
@@ -114,7 +114,7 @@ if (typeof document !== 'undefined') {
     try {
       ready = await warmup();
       status.textContent = 'Thinking…';
-      const payload = { message: question };
+      const payload = { message: question, input_source: inputSource };
       if (conversationId) payload.conversation_id = conversationId;
       let data;
       try {
@@ -125,7 +125,7 @@ if (typeof document !== 'undefined') {
           messages.replaceChildren();
           addMessage('assistant', 'Your previous conversation ended. Starting a fresh chat with your question.');
           userMessage = addMessage('user', question);
-          data = await callApi('/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:question})});
+          data = await callApi('/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:question, input_source:inputSource})});
         } else { throw error; }
       }
       data = validateAnswer(data);
