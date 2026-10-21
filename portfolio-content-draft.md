@@ -131,6 +131,10 @@ I ask questions early—about definitions, ownership, edge cases, and the decisi
 
 I hold a master's in Data Science for Public Policy from the McCourt School of Public Policy at Georgetown University and a bachelor's in Economics and Mathematics from Lahore University of Management Sciences.
 
+Education is one of the policy areas I care deeply about. What drew me to Transfr was its mission to expand opportunity, especially for young people in juvenile facilities. Helping people build a future through education and career training—and working toward breaking the school-to-prison pipeline—gives that work meaning for me.
+
+I’m also increasingly interested in public healthcare, especially Medicare and Medicaid. These programs bring together complex data challenges and decisions that shape people’s access to care. I’m drawn to that intersection: making data more reliable and useful in systems that matter so much to people’s lives.
+
 Away from the keyboard, music and dance are part of my routine. Zumba gets my day moving, and a burst of cardio helps me reset after a challenging one.
 
 ### Contact
